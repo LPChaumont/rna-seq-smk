@@ -1,0 +1,18 @@
+use-conda: True
+conda-frontend: mamba
+cores: 1
+rerun-triggers: mtime
+printshellcmds: True
+
+
+default-resources:
+  - mem_gb=4
+  - time='0-1:00' # needs quote
+  - threads=1
+
+
+#set-resources:
+#    salmon_index:
+#        threads: 3
+#        mem_gb: 8
+#        time: 0-1:00

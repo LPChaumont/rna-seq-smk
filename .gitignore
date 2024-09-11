@@ -1,0 +1,11 @@
+*
+
+!config/
+!config/**
+!profiles/
+!profiles/**
+!workflow/
+!workflow/**
+
+!.gitignore
+!README.md

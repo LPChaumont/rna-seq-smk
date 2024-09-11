@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - r-base=4.3.*
+  - bioconductor-deseq2=1.42.0
+  - r-ggplot2=3.5.1
+  - r-pheatmap=1.0.12
+  - r-ashr=2.2_63
+  - r-rcolorbrewer

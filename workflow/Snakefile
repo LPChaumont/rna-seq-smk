@@ -1,0 +1,22 @@
+configfile: "config/config.yaml"
+
+
+include: "rules/common.smk"
+include: "rules/ref.smk"
+include: "rules/fastp.smk"
+include: "rules/trimmomatic.smk"
+include: "rules/star.smk"
+include: "rules/salmon.smk"
+include: "rules/coco.smk"
+include: "rules/rmats.smk"
+include: "rules/deseq2.smk"
+
+
+rule all:
+    input:
+        all_input,
+
+
+rule download:
+    input:
+        download_input,

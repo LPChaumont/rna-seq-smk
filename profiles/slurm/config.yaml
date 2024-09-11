@@ -1,0 +1,84 @@
+cluster:
+  mkdir -p logs_slurm/{rule} &&
+  bash profiles/slurm/slurm_submit.sh
+  '--account=def-scottmic
+  --mail-user=louis-philippe.chaumont@usherbrooke.ca
+  --mail-type=FAIL
+  --job-name={rule}-{wildcards}
+  --mem={resources.mem_gb}G
+  --time={resources.time}
+  --cpus-per-task={resources.threads}
+  --output=logs_slurm/{rule}/%j-{wildcards}.log'
+  '{rule}' '{wildcards}' '{dependencies}'
+
+
+default-resources:
+  - threads=1
+  - mem_gb=4
+  - time='0-1:00' # needs quote
+
+
+set-resources:
+    fastp:
+        threads: 3
+
+    trimmomatic:
+        threads: 4
+        mem_gb: 4
+        time: 0-1:00
+
+    salmon_index:
+        threads: 3
+        mem_gb: 8
+        time: 0-1:00
+
+    salmon_quant:
+        threads: 3
+        mem_gb: 8
+        time: 0-1:00
+
+    star_index:
+        threads: 8
+        mem_gb: 48
+        time: 0-2:00
+    
+    star_align:
+        threads: 5
+        mem_gb: 48
+        time: 0-2:00
+
+    coco_ca:
+        mem_gb: 32
+        time: 0-5:00
+
+    coco_cb:
+        thread: 3
+        mem_gb: 48
+        time: 0-7:00
+
+    coco_cc:
+        threads: 3
+        mem_gb: 48
+        time: 0-12:00
+
+    coco_sort_bg:
+        threads: 3
+        mem_gb: 64
+        time: 0-2:00
+
+    rmats_prep:
+        threads: 4
+        mem_gb: 4
+        time: 0-1:00
+
+
+immediate-submit: True
+jobs: 999 
+use-conda: True
+conda-frontend: mamba
+use-envmodules: False
+keep-going: True
+notemp: True
+printshellcmds: True
+rerun-triggers: mtime
+verbose: False
