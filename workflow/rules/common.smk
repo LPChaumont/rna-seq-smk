@@ -127,6 +127,14 @@ def all_input(wildcards):
         )
         + ["results/multiqc/star/multiqc_star_report.html"]
     )
+    # qualimap
+    wanted_input.extend(
+        expand(
+            "results/{dir}/{sample}",
+            sample=SAMPLES,
+            dir=["qualimap_bamqc", "qualimap_rnaseq"]
+        )
+    )
     # salmon
     if config["salmon"]["activate"]:
         wanted_input.extend(
@@ -135,7 +143,6 @@ def all_input(wildcards):
                 "results/multiqc/fastp/multiqc_salmon_report.html",
             ]
         )
-
     # CoCo
     if config["coco"]["activate"]:
         wanted_input.extend(
