@@ -33,3 +33,29 @@ rule qualimap_rnaseq:
         " -outdir {output}"
         " -pe"
         " &> {log}"
+
+
+rule qualimap_multiqc:
+    input:
+        data=expand(
+            "results/qualimap_rnaseq/{sample}",
+            sample=SAMPLES,
+            dir=["qualimap_bamqc", "qualimap_rnaseq"]
+        ),
+    output:
+        outdir=directory("results/multiqc/qualimap"),
+        report="results/multiqc/qualimap/multiqc_qualimap_report.html",
+    params:
+        filename="multiqc_qualimap_report.html",
+        indir=["qualimap_bamqc", "qualimap_rnaseq"],
+    log:
+        "logs/multiqc/qualimap.log",
+    conda:
+        "../envs/multiqc.yaml"
+    shell:
+        "multiqc"
+        " {params.indir}"
+        " --outdir {output.outdir}"
+        " --filename {params.filename}"
+        " --force"
+        " &> {log}"

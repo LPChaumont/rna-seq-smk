@@ -134,6 +134,7 @@ def all_input(wildcards):
             sample=SAMPLES,
             dir=["qualimap_bamqc", "qualimap_rnaseq"]
         )
+        + ["results/multiqc/qualimap/multiqc_qualimap_report.html"]
     )
     # salmon
     if config["salmon"]["activate"]:

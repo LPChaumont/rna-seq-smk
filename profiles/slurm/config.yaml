@@ -47,6 +47,9 @@ set-resources:
         mem_gb: 48
         time: 0-2:00
 
+    qualimap_bamqc:
+        threads: 8
+
     coco_ca:
         mem_gb: 32
         time: 0-5:00
