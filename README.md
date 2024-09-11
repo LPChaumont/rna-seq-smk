@@ -10,10 +10,10 @@ This Snakemake workflow uses mamba for installation and dependency resolution, s
 conda install -n base -c conda-forge mamba
 ```
 
-Afterwards, create a new conda environment called "smake" with Snakemake 7.32.4. Be aware that Snakemake 8.0.0 introduced some [breaking changes](https://snakemake.readthedocs.io/en/stable/project_info/history.html#breaking-changes).
+Afterwards, create a new conda environment called "smake" with Snakemake, ensuring that the Snakemake version is less than 8. Be aware that Snakemake version 8+ introduced some [breaking changes](https://snakemake.readthedocs.io/en/stable/project_info/history.html#breaking-changes). This workflow was made with Snakemake 7.32.4 and Python 3.11.10.
 
 ```bash
-mamba create -n smake -c bioconda -c conda-forge snakemake=7.32.4
+mamba create -n smake -c bioconda -c conda-forge "snakemake<8" "python<3.12"
 ```
 
 ## Installation
