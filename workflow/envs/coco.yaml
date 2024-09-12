@@ -4,8 +4,8 @@ channels:
   - nodefaults
 dependencies:
   - bedtools=2.31.1
-  # As of pandas 2.0, append (previously deprecated) was removed
-  - pandas=1.5.3 # pandas<2.0 
+  # As of pandas 2.0, append was removed
+  - pandas=1.5.3 
   - numpy=1.26.4 
   - samtools=1.20
   - subread=2.0.6

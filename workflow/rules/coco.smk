@@ -13,17 +13,21 @@ rule install_coco:
         " && git clone {params.link}"
 
 
-# ERROR
 rule install_pairedBamToBed12:
     output:
         directory("resources/pairedBamToBed12"),
     params:
         link="https://github.com/Population-Transcriptomics/pairedBamToBed12.git",
+    conda:
+        "../envs/pairedBamToBed12.yaml"
     shell:
-        "cd resources/"
-        " && git clone {params.link}"
-        " && cd pairedBamToBed12/"
-        " && make"
+        """
+        cd resources/ &&
+        git clone {params.link} &&
+        cd pairedBamToBed12/ &&
+        sed -i "22s|$| -I$CONDA_PREFIX/include|" Makefile &&
+        make
+        """
 
 
 rule coco_ca:

@@ -176,8 +176,7 @@ def download_input(wildcards):
     # ref
     wanted_input.extend([get_full_transcriptome(), get_genome(), get_annotation()])
     # CoCo
-    wanted_input.extend(["resources/coco"])
-    # wanted_input.extend(["resources/coco", "resources/pairedBamToBed12"])
+    wanted_input.extend(["resources/coco", "resources/pairedBamToBed12"])
     # rMATS
     wanted_input.extend(["resources/install_r_deps.R"])
 
