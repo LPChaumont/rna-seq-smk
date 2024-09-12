@@ -145,7 +145,7 @@ rule rmats_stat:
 
 rule rmats_filtering:
     input:
-        raw="results/rmats/stat/{contrast}/{event}.MATS.{junction}.txt",
+        "results/rmats/stat/{contrast}/summary.txt",
     output:
         filtered="results/rmats/stat/{contrast}/{filter}_{event}.MATS.{junction}.txt",
     params:
