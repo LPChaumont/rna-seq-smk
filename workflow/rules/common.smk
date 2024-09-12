@@ -128,14 +128,9 @@ def all_input(wildcards):
         + ["results/multiqc/star/multiqc_star_report.html"]
     )
     # qualimap
-    wanted_input.extend(
-        expand(
-            "results/{dir}/{sample}",
-            sample=SAMPLES,
-            dir=["qualimap_bamqc", "qualimap_rnaseq"]
-        )
-        + ["results/multiqc/qualimap/multiqc_qualimap_report.html"]
-    )
+    wanted_input.extend(["results/multiqc/qualimap/multiqc_qualimap_report.html"])
+    # samtools
+    wanted_input.extend(["results/multiqc/samtools/multiqc_samtools_report.html"])
     # salmon
     if config["salmon"]["activate"]:
         wanted_input.extend(

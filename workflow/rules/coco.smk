@@ -79,7 +79,6 @@ rule merge_coco_quant:
         "../scripts/merge_coco_quant.py"
 
 
-
 rule coco_cb:
     input:
         coco="resources/coco/bin/coco.py",

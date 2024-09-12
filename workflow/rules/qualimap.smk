@@ -40,7 +40,7 @@ rule qualimap_multiqc:
         data=expand(
             "results/qualimap_rnaseq/{sample}",
             sample=SAMPLES,
-            dir=["qualimap_bamqc", "qualimap_rnaseq"]
+            dir=["qualimap_bamqc", "qualimap_rnaseq"],
         ),
     output:
         outdir=directory("results/multiqc/qualimap"),
