@@ -9,7 +9,7 @@ rule install_coco:
     params:
         link="https://github.com/scottgroup/coco.git",
     conda:
-        "..envs/coco.yaml"
+        "../envs/coco.yaml"
     shell:
         "cd resources/"
         " && git clone {params.link}"
@@ -21,7 +21,7 @@ rule install_pairedBamToBed12:
     params:
         link="https://github.com/Population-Transcriptomics/pairedBamToBed12.git",
     conda:
-        "../envs/pairedBamToBed12.yaml"
+        "../envs/coco.yaml"
     shell:
         "cd resources/ &&"
         " git clone {params.link} &&"
