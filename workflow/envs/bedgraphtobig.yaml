@@ -4,4 +4,4 @@ channels:
   - nodefaults
 dependencies:
   - ucsc-bedgraphtobigwig=469
-  - chromsize=0.02
+  - chromsize=0.0.2
