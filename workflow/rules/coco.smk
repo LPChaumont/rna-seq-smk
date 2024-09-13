@@ -23,13 +23,10 @@ rule install_pairedBamToBed12:
     conda:
         "../envs/pairedBamToBed12.yaml"
     shell:
-        """
-        cd resources/ &&
-        git clone {params.link} &&
-        cd pairedBamToBed12/ &&
-        sed -i "22s|$| -I$CONDA_PREFIX/include|" Makefile &&
-        make
-        """
+        "cd resources/ &&"
+        " git clone {params.link} &&"
+        " cd pairedBamToBed12/ &&"
+        " make"
 
 
 rule coco_ca:
