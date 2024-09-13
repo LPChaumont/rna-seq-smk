@@ -3,6 +3,7 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
+  - git
   # to fix pairedBamToBed12 installation error
   - gxx=10.4.0
   - zlib=1.3.1

@@ -14,7 +14,7 @@ rule install_pairadise:
     shell:
         "cd resources/"
         " && git clone {params.link_pairadise}"
-        " && wget {params.link_r_deps}"
+        " && curl -L {params.link_r_deps}"
         " && Rscript install_r_deps.R paired"
 
 

@@ -8,6 +8,8 @@ rule install_coco:
         directory("resources/coco"),
     params:
         link="https://github.com/scottgroup/coco.git",
+    conda:
+        "..envs/coco.yaml"
     shell:
         "cd resources/"
         " && git clone {params.link}"
