@@ -1,6 +1,6 @@
-# RNA-seq Snakemake workflow
+# RNA-Seq Snakemake workflow
 
-A Snakemake workflow for short-read RNA-seq. It takes FASTQ files as input, performs quality control, trimming, alignment, quantification, differential gene expression analysis and splicing analysis.
+A Snakemake workflow for short-read RNA-seq. It takes FASTQ files as input, performs quality control, trimming, alignment, quantification, differential gene expression and splicing analysis.
 
 ## Dependencies
 
