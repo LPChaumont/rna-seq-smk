@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - ucsc-bedgraphtobigwig=v469
+  - chromsize=v0.02

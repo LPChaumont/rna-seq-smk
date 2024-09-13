@@ -117,3 +117,34 @@ rule coco_sort_bg:
         " | sed 's/chrM/chrMT/g' > {output.sorted_bedgraph}"
         " && rm {input.unsorted_bedgraph}"
         " &> {log}"
+
+
+rule chromsize:
+    input:
+        get_genome(),
+    output:
+        "results/coco_cb/bigwig/chrom_sizes.txt",
+    log:
+        "logs/bedgraphtobigwig/chromsize.log",
+    conda:
+        "../envs/bedgraphtobig.yaml"
+    shell:
+        "chromsize --fasta {input} --outdir {output}"
+        " --threads {resources.threads}"
+        " 2> {log}"
+
+
+rule bgtobw:
+    input:
+        chromsizes="results/coco_cb/bigwig/chrom_sizes.txt",
+        bedgraph="results/coco_cb/bedgraph/{sample}.bedgraph",
+    output:
+        bigwig="results/coco_cb/bigwig/{sample}.bigwig",
+    log:
+        "logs/bedgraphtobigwig/{sample}.log",
+    conda:
+        "../envs/bedgraphtobig.yaml"
+    shell:
+        "bedGraphToBigWig"
+        " {input.bedgraph} {input.chromsizes}"
+        " 2> {log}"
