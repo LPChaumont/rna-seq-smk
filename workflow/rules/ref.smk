@@ -1,6 +1,6 @@
 localrules:
     get_genome,
-    get_annotation,
+    get_gtf,
     get_transcriptome,
     build_full_transcriptome,
 
@@ -19,15 +19,15 @@ rule get_genome:
         "v3.14.1/bio/reference/ensembl-sequence"
 
 
-rule get_annotation:
+rule get_gtf:
     output:
-        get_annotation(),
+        get_gtf(),
     params:
         species=SPECIES,
         release=RELEASE,
         build=BUILD,
     log:
-        "logs/ref/get_annotation.log",
+        "logs/ref/get_gtf.log",
     wrapper:
         "v3.14.1/bio/reference/ensembl-annotation"
 

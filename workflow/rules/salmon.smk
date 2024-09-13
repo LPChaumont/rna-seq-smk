@@ -49,7 +49,7 @@ rule salmon_quant:
 
 rule salmon_tximport:
     input:
-        gtf=get_annotation(),
+        gtf=get_gtf(),
         quant=expand("results/salmon_quant/{sample}/quant.sf", sample=SAMPLES),
     output:
         tx_tpm="results/salmon_quant/salmon_tpm_gene.tsv",

@@ -19,7 +19,7 @@ rule qualimap_bamqc:
 rule qualimap_rnaseq:
     input:
         bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
-        gtf=get_annotation(),
+        gtf=get_gtf(),
     output:
         outdir=directory("results/qualimap_rnaseq/{sample}"),
     log:

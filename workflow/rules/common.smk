@@ -26,7 +26,7 @@ def get_genome():
     return f"resources/ensembl.{SPECIES}.{BUILD}.primary_assembly.fa"
 
 
-def get_annotation():
+def get_gtf():
     # Get the custom genome if provided, else download it from Ensembl
     if config["ref"]["custom_gtf"]:
         return config["ref"]["custom_gtf"]
@@ -175,7 +175,7 @@ def download_input(wildcards):
     wanted_input = []
 
     # ref
-    wanted_input.extend([get_full_transcriptome(), get_genome(), get_annotation()])
+    wanted_input.extend([get_full_transcriptome(), get_genome(), get_gtf()])
     # CoCo
     wanted_input.extend(["resources/coco", "resources/pairedBamToBed12"])
     # rMATS

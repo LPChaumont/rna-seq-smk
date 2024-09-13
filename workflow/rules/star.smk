@@ -1,7 +1,7 @@
 rule star_index:
     input:
         genome=get_genome(),
-        gtf=get_annotation(),
+        gtf=get_gtf(),
     output:
         chrNameLength="results/star_index/chrNameLength.txt",
     log:

@@ -47,7 +47,7 @@ rule rmats_config_post:
 
 rule rmats_prep:
     input:
-        gtf=get_annotation(),
+        gtf=get_gtf(),
         config="results/rmats/bam_config_prep/{sample}.txt",
     output:
         prep_dir=directory("results/rmats/prep/{sample}"),
@@ -83,7 +83,7 @@ rule rmats_prep:
 rule rmats_post:
     input:
         flag=expand("results/rmats/prep/cp_with_prefix/{sample}.txt", sample=SAMPLES),
-        gtf=get_annotation(),
+        gtf=get_gtf(),
         config="results/rmats/bam_config_post/all_samples.txt",
     output:
         summary="results/rmats/post/summary.txt",
