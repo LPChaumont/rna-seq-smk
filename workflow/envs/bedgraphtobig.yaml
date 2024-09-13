@@ -3,5 +3,5 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  - ucsc-bedgraphtobigwig=v469
-  - chromsize=v0.02
+  - ucsc-bedgraphtobigwig=469
+  - chromsize=0.02
