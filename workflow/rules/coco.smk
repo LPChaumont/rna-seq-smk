@@ -23,10 +23,11 @@ rule install_pairedBamToBed12:
     conda:
         "../envs/coco.yaml"
     shell:
-        "cd resources/ &&"
-        " git clone {params.link} &&"
-        " cd pairedBamToBed12/ &&"
-        " make"
+        "cd resources/ "
+        " && git clone {params.link}"
+        " && cd pairedBamToBed12/"
+        " && make "
+        " && export PATH=$PWD/{params}:$PATH"
 
 
 rule coco_ca:
@@ -95,9 +96,8 @@ rule coco_cb:
         "../envs/coco.yaml"
     shell:
         " python {input.coco} cb"
-        " -u"
-        " -t {resources.threads}"
-        " -c 2500000"
+        " --ucsc_compatible"
+        " --thread {resources.threads}"
         " {input.bam}"
         " {output.unsorted_bedgraph}"
         " {input.chrNameLength}"
@@ -128,7 +128,7 @@ rule chromsize:
     conda:
         "../envs/bedgraphtobig.yaml"
     shell:
-        "chromsize --fasta {input} --outdir {output}"
+        "chromsize --fasta {input} --output {output}"
         " --threads {resources.threads}"
         " 2> {log}"
 
