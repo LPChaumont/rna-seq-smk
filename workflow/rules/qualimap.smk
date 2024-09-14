@@ -32,6 +32,7 @@ rule qualimap_rnaseq:
         " -gtf {input.gtf}"
         " -outdir {output}"
         " -pe"
+        " --java-mem-size {resources.mem_gb}"
         " &> {log}"
 
 
