@@ -3,17 +3,17 @@ rule salmon_index:
         genome=get_genome(),
         transcriptome=get_full_transcriptome(),
     output:
-        outdir=directory("results/salmon_index"),
         decoys="results/salmon_index/decoys.txt",
         gentrome="results/salmon_index/gentrome.fa",
+        outdir=directory("results/salmon_index"),
     log:
         "logs/salmon_index/salmon_index.log",
     conda:
         "../envs/salmon.yaml"
     shell:
-        "grep '^>'' {input.genome}"
-        " | cut -d " " -f 1"
-        " | sed 's/>//g' > {output.decoys}"
+        "grep '^>' {input.genome} |"
+        " cut -d ' ' -f 1 |"
+        " sed 's/>//g' > {output.decoys}"
         " && cat {input.transcriptome} {input.genome} > {output.gentrome}"
         " && salmon index"
         " --threads {resources.threads}"
