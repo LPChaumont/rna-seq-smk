@@ -6,6 +6,7 @@ localrules:
 rule install_coco:
     output:
         directory("resources/coco"),
+        "resources/coco/bin/coco.py",
     params:
         link="https://github.com/scottgroup/coco.git",
     conda:
@@ -17,7 +18,7 @@ rule install_coco:
 
 rule install_pairedBamToBed12:
     output:
-        directory("resources/pairedBamToBed12"),
+        directory("resources/pairedBamToBed12/bin"),
     params:
         link="https://github.com/Population-Transcriptomics/pairedBamToBed12.git",
     conda:
@@ -27,7 +28,7 @@ rule install_pairedBamToBed12:
         " && git clone {params.link}"
         " && cd pairedBamToBed12/"
         " && make "
-        " && export PATH=$PWD/{params}:$PATH"
+        " && export PATH=$PWD/{output}:$PATH"
 
 
 rule coco_ca:
@@ -37,7 +38,7 @@ rule coco_ca:
     output:
         coco_gtf="results/coco_ca/correct_annotation.gtf",
     log:
-        "logs/coco_ca/coco_ca.log",
+        "logs/coco/coco_ca.log",
     conda:
         "../envs/coco.yaml"
     shell:
@@ -53,7 +54,7 @@ rule coco_cc:
     output:
         quant="results/coco_cc/{sample}.tsv",
     log:
-        "logs/coco_cc/{sample}.log",
+        "logs/coco/coco_cc/{sample}.log",
     conda:
         "../envs/coco.yaml"
     shell:
@@ -70,32 +71,36 @@ rule coco_cc:
 
 rule merge_coco_quant:
     input:
+        gtf=get_gtf(),
         quants=expand("results/coco_cc/{sample}.tsv", sample=SAMPLES),
     output:
         counts="results/coco_cc/coco_counts.tsv",
         cpm="results/coco_cc/coco_cpm.tsv",
         tpm="results/coco_cc/coco_tpm.tsv",
     log:
-        "logs/coco_cc/merge_coco_quant.log",
+        "logs/coco/merge_coco_quant.log",
     conda:
         "../envs/coco.yaml"
     script:
         "../scripts/merge_coco_quant.py"
 
 
+# TODO fix error: pairedBamToBed12 is/are not installed
 rule coco_cb:
     input:
         coco="resources/coco/bin/coco.py",
         bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
         chrNameLength="results/star_index/chrNameLength.txt",
+        pb2b="resources/pairedBamToBed12/bin",
     output:
         unsorted_bedgraph="results/coco_cb/bedgraph/{sample}_unsorted.bedgraph.bed12",
     log:
-        "logs/coco_cb/{sample}.log",
+        "logs/coco/coco_cb/{sample}.log",
     conda:
         "../envs/coco.yaml"
     shell:
-        " python {input.coco} cb"
+        "export PATH=$PWD/{input.pb2b}:$PATH"
+        " && python {input.coco} cb"
         " --ucsc_compatible"
         " --thread {resources.threads}"
         " {input.bam}"
@@ -110,40 +115,9 @@ rule coco_sort_bg:
     output:
         sorted_bedgraph="results/coco_cb/bedgraph/{sample}.bedgraph",
     log:
-        "logs/coco_sort_bg/{sample}.log",
+        "logs/coco/sort_bg/{sample}.log",
     shell:
         "sort -k1,1 -k2,2n {input.unsorted_bedgraph}"
         " | sed 's/chrM/chrMT/g' > {output.sorted_bedgraph}"
         " && rm {input.unsorted_bedgraph}"
         " &> {log}"
-
-
-rule chromsize:
-    input:
-        get_genome(),
-    output:
-        "results/coco_cb/bigwig/chrom_sizes.txt",
-    log:
-        "logs/bedgraphtobigwig/chromsize.log",
-    conda:
-        "../envs/bedgraphtobig.yaml"
-    shell:
-        "chromsize --fasta {input} --output {output}"
-        " --threads {resources.threads}"
-        " 2> {log}"
-
-
-rule bgtobw:
-    input:
-        chromsizes="results/coco_cb/bigwig/chrom_sizes.txt",
-        bedgraph="results/coco_cb/bedgraph/{sample}.bedgraph",
-    output:
-        bigwig="results/coco_cb/bigwig/{sample}.bigwig",
-    log:
-        "logs/bedgraphtobigwig/{sample}.log",
-    conda:
-        "../envs/bedgraphtobig.yaml"
-    shell:
-        "bedGraphToBigWig"
-        " {input.bedgraph} {input.chromsizes}"
-        " 2> {log}"
