@@ -21,25 +21,3 @@ rule fastp:
         " --html {output.html}"
         " --thread {resources.threads}"
         " 2> {log}"
-
-
-rule fastp_multiqc:
-    input:
-        data=expand("results/fastp/{sample}_fastp.json", sample=SAMPLES),
-    output:
-        outdir=directory("results/multiqc/fastp"),
-        report="results/multiqc/fastp/multiqc_fastp_report.html",
-    params:
-        filename="multiqc_fastp_report.html",
-        indir="results/fastp",
-    log:
-        "logs/multiqc/fastp.log",
-    conda:
-        "../envs/multiqc.yaml"
-    shell:
-        "multiqc"
-        " {params.indir}"
-        " --outdir {output.outdir}"
-        " --filename {params.filename}"
-        " --force"
-        " &> {log}"

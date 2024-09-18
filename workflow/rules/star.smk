@@ -5,7 +5,7 @@ rule star_index:
     output:
         chrNameLength="results/star_index/chrNameLength.txt",
     log:
-        "logs/star_index/star_index.log",
+        "logs/star/star_index.log",
     params:
         index_dir="results/star_index",
         tmp="results/star_index/STARtmp",
@@ -32,7 +32,7 @@ rule star_align:
     output:
         bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
     log:
-        "logs/star_align/{sample}.log",
+        "logs/star/align/{sample}.log",
     params:
         prefix="results/star_align/{sample}/",
         index_dir="results/star_index",
@@ -56,29 +56,4 @@ rule star_align:
         " --winAnchorMultimapNmax 100"
         " --alignEndsProtrude 5 ConcordantPair"
         " --limitBAMsortRAM 6802950316"
-        " &> {log}"
-
-
-rule star_multiqc:
-    input:
-        data=expand(
-            "results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
-            sample=SAMPLES,
-        ),
-    output:
-        outdir=directory("results/multiqc/star"),
-        report="results/multiqc/star/multiqc_star_report.html",
-    params:
-        filename="multiqc_star_report.html",
-        indir="results/star_align",
-    log:
-        "logs/multiqc/star.log",
-    conda:
-        "../envs/multiqc.yaml"
-    shell:
-        "multiqc"
-        " {params.indir}"
-        " --outdir {output.outdir}"
-        " --filename {params.filename}"
-        " --force"
         " &> {log}"

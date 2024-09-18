@@ -7,7 +7,7 @@ rule salmon_index:
         gentrome="results/salmon_index/gentrome.fa",
         outdir=directory("results/salmon_index"),
     log:
-        "logs/salmon_index/salmon_index.log",
+        "logs/salmon/salmon_index.log",
     conda:
         "../envs/salmon.yaml"
     shell:
@@ -31,7 +31,7 @@ rule salmon_quant:
     output:
         quant="results/salmon_quant/{sample}/quant.sf",
     log:
-        "logs/salmon_quant/{sample}.log",
+        "logs/salmon/quant/{sample}.log",
     params:
         outdir="results/salmon_quant/{sample}",
     conda:
@@ -57,32 +57,10 @@ rule salmon_tximport:
         tx_count="results/salmon_quant/salmon_counts_gene.tsv",
         gene_count="results/salmon_quant/salmon_counts_transcript.tsv",
     log:
-        "logs/salmon_tximport/salmon_tximport.log",
+        "logs/salmon/salmon_tximport.log",
     params:
         quantdir="results/salmon_quant",
     conda:
         "../envs/deseq2.yaml"
     script:
-        "../scripts/merge_salmon_output.R"
-
-
-rule salmon_multiqc:
-    input:
-        data=expand("results/salmon_quant/{sample}/quant.sf", sample=SAMPLES),
-    output:
-        outdir=directory("results/multiqc/salmon"),
-        report="results/multiqc/fastp/multiqc_salmon_report.html",
-    params:
-        filename="multiqc_salmon_report.html",
-        indir="results/salmon_quant",
-    log:
-        "logs/multiqc/salmon.log",
-    conda:
-        "../envs/multiqc.yaml"
-    shell:
-        "multiqc"
-        " {params.indir}"
-        " --outdir {output.outdir}"
-        " --filename {params.filename}"
-        " --force"
-        " &> {log}"
+        "../scripts/merge_salmon_quant.R"
