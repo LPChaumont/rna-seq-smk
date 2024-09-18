@@ -7,11 +7,13 @@ include: "rules/fastp.smk"
 include: "rules/trimmomatic.smk"
 include: "rules/star.smk"
 include: "rules/qualimap.smk"
+include: "rules/rnaseqc.smk"
 include: "rules/samtools.smk"
 include: "rules/salmon.smk"
 include: "rules/coco.smk"
 include: "rules/rmats.smk"
 include: "rules/deseq2.smk"
+include: "rules/multiqc.smk"
 
 
 rule all:

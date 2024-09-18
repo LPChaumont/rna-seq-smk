@@ -1,7 +1,7 @@
 cluster:
   mkdir -p logs_slurm/{rule} &&
   bash profiles/slurm/slurm_submit.sh
-  '--account=def-scottmic
+  '--account=def-kchoquet
   --mail-user=louis-philippe.chaumont@usherbrooke.ca
   --mail-type=FAIL
   --job-name={rule}-{wildcards}
@@ -13,27 +13,29 @@ cluster:
 
 
 default-resources:
-  - threads=1
-  - mem_gb=4
-  - time='0-1:00' # needs quote
+    threads: 1
+    mem_gb: 1
+    time: 0-1:00
 
 
 set-resources:
     fastp:
         threads: 3
+        mem_gb: 4
+        time: 0-0:30
 
     trimmomatic:
         threads: 4
-        mem_gb: 4
+        mem_gb: 2
         time: 0-1:00
 
     salmon_index:
-        threads: 3
-        mem_gb: 8
+        threads: 4
+        mem_gb: 24
         time: 0-1:00
 
     salmon_quant:
-        threads: 3
+        threads: 4
         mem_gb: 8
         time: 0-1:00
 
@@ -43,16 +45,35 @@ set-resources:
         time: 0-2:00
     
     star_align:
-        threads: 5
-        mem_gb: 48
+        threads: 4
+        mem_gb: 36
         time: 0-2:00
 
+    sam_sort_by_name:
+        threads: 32
+        mem_gb: 8
+        time: 0-3:00
+
     qualimap_bamqc:
-        threads: 8
+        threads: 4
+        mem_gb: 4
+        time: 0-1:00
+
+    qualimap_rnaseq:
+        mem_gb: 16
+        time: 0-1:00
+
+    collapse_gtf:
+        mem_gb: 3
+        time: 0-0:30
+
+    rnaseqc:
+        mem_gb: 1
+        time: 0-0:30
 
     coco_ca:
-        mem_gb: 32
-        time: 0-5:00
+        mem_gb: 8
+        time: 0-1:00
 
     coco_cb:
         thread: 3
@@ -60,8 +81,8 @@ set-resources:
         time: 0-7:00
 
     coco_cc:
-        threads: 3
-        mem_gb: 48
+        threads: 4
+        mem_gb: 36
         time: 0-12:00
 
     coco_sort_bg:
@@ -71,7 +92,7 @@ set-resources:
 
     rmats_prep:
         threads: 4
-        mem_gb: 4
+        mem_gb: 2
         time: 0-1:00
 
 

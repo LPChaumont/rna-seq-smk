@@ -19,7 +19,6 @@ TRANSCRIPTOME_DATATYPES = ["cdna", "ncrna"]
 
 
 def get_genome():
-    # Get the custom genome if provided, else download it from Ensembl
     if config["ref"]["custom_genome"]:
         return config["ref"]["custom_genome"]
 
@@ -27,7 +26,6 @@ def get_genome():
 
 
 def get_gtf():
-    # Get the custom genome if provided, else download it from Ensembl
     if config["ref"]["custom_gtf"]:
         return config["ref"]["custom_gtf"]
 
@@ -35,7 +33,6 @@ def get_gtf():
 
 
 def get_transcriptome(wildcards):
-    # Get the custom transcriptome if provided, else download cdna and ncrna transcriptome from Ensembl
     if config["ref"]["custom_transcriptome"]:
         return config["ref"]["custom_transcriptome"]
 
@@ -99,18 +96,34 @@ def get_deseq2_extra():
     return extra
 
 
-def all_input(wildcards):
-    """
-    Defining all requested inputs for the rule 'all'.
-    """
+def get_multiqc_input(wildcards):
 
+    input = (
+        expand("results/fastp/{sample}_fastp.json", sample=SAMPLES)
+        + expand("results/qualimap_bamqc/{sample}", sample=SAMPLES)
+        + expand("results/qualimap_rnaseq/{sample}", sample=SAMPLES)
+        + expand(
+            "results/star_align/{sample}/Aligned.sortedByCoord.out.bam", sample=SAMPLES
+        )
+        + expand("results/sam_stats/{sample}.txt", sample=SAMPLES)
+        + expand("results/sam_flagstat/{sample}.tsv", sample=SAMPLES)
+        + expand("results/sam_idxstats/{sample}.tsv", sample=SAMPLES)
+        + expand("results/rnasesqc/{sample}", sample=SAMPLES)
+    )
+    if config["salmon"]["activate"]:
+        input += expand(
+            expand("results/salmon_quant/{sample}/quant.sf", sample=SAMPLES),
+            sample=SAMPLES,
+        )
+
+    return input
+
+
+def all_input(wildcards):
     wanted_input = []
 
     # fastp
-    wanted_input.extend(
-        expand("results/fastp/{sample}_fastp.html", sample=SAMPLES)
-        + ["results/multiqc/fastp/multiqc_fastp_report.html"]
-    )
+    wanted_input.extend(expand("results/fastp/{sample}_fastp.html", sample=SAMPLES))
     # trimmomatic
     wanted_input.extend(
         expand(
@@ -125,18 +138,27 @@ def all_input(wildcards):
             "results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
             sample=SAMPLES,
         )
-        + ["results/multiqc/star/multiqc_star_report.html"]
+    )
+    # Samtools
+    wanted_input.extend(
+        expand("results/sam_stats/{sample}.txt", sample=SAMPLES)
+        + expand("results/sam_flagstat/{sample}.tsv", sample=SAMPLES)
+        + expand("results/sam_idxstats/{sample}.tsv", sample=SAMPLES)
+        + expand(
+            "results/star_align/{sample}/Aligned.sortedByName.out.bam", sample=SAMPLES
+        )
     )
     # qualimap
-    wanted_input.extend(["results/multiqc/qualimap/multiqc_qualimap_report.html"])
-    # samtools
-    wanted_input.extend(["results/multiqc/samtools/multiqc_samtools_report.html"])
+    wanted_input.extend(
+        expand("results/qualimap_bamqc/{sample}", sample=SAMPLES)
+        + expand("results/qualimap_rnaseq/{sample}", sample=SAMPLES)
+        + ["results/qualimap_multi_bamqc"]
+    )
     # salmon
     if config["salmon"]["activate"]:
         wanted_input.extend(
             [
                 "results/salmon_quant/salmon_tpm_gene.tsv",
-                "results/multiqc/fastp/multiqc_salmon_report.html",
             ]
         )
     # CoCo
@@ -146,8 +168,8 @@ def all_input(wildcards):
                 "results/coco_cc/coco_{counttype}.tsv",
                 counttype=["counts", "cpm", "tpm"],
             )
-            + expand("results/coco_cb/bedgraph/{sample}.bedgraph", sample=SAMPLES)
-            + expand("results/coco_cb/bigwig/{sample}.bigwig", sample=SAMPLES)
+            # + expand("results/coco_cb/bedgraph/{sample}.bedgraph", sample=SAMPLES)
+            # + expand("results/coco_cb/bigwig/{sample}.bigwig", sample=SAMPLES)
         )
     # rMATS
     if config["rmats"]["activate"]:
@@ -163,22 +185,22 @@ def all_input(wildcards):
     # DESeq2
     if config["deseq2"]["activate"]:
         wanted_input.extend(["results/deseq2/heatmap_samples.png"])
+    # MultiQC
+    wanted_input.extend(["results/multiqc"])
 
     return wanted_input
 
 
 def download_input(wildcards):
-    """
-    Defining all requested inputs for the rule 'download'.
-    """
-
     wanted_input = []
 
     # ref
     wanted_input.extend([get_full_transcriptome(), get_genome(), get_gtf()])
     # CoCo
-    wanted_input.extend(["resources/coco", "resources/pairedBamToBed12"])
+    wanted_input.extend(["resources/coco", "resources/pairedBamToBed12/bin"])
     # rMATS
-    wanted_input.extend(["resources/install_r_deps.R"])
+    wanted_input.extend(["resources/install_r_deps.R", "resources/PAIRADISE"])
+    # RNA-SeQC
+    wanted_input.extend(["resources/collapse_annotation.py"])
 
     return wanted_input
