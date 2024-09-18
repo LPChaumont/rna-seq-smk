@@ -8,4 +8,7 @@ dependencies:
   - r-ggplot2=3.5.1
   - r-pheatmap=1.0.12
   - r-ashr=2.2_63
+  - bioconductor-tximport=1.30.0
   - r-rcolorbrewer
+  - bioconductor-rtracklayer=1.62.0
+  - r-jsonlite=1.8.8

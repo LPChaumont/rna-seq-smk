@@ -3,6 +3,7 @@ sink(log)
 sink(log, type = "message")
 
 library(tximport)
+library(jsonlite)
 library(rtracklayer)
 
 # Get salmon quant files
