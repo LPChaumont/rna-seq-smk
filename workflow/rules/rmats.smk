@@ -58,7 +58,7 @@ rule rmats_prep:
         post_tmp_dir="results/rmats/post/tmp",
         prefix="{sample}_",
     log:
-        "logs/rmats_prep/{sample}.log",
+        "logs/rmats/prep/{sample}.log",
     conda:
         "../envs/rmats.yaml"
     shell:
@@ -88,7 +88,7 @@ rule rmats_post:
     output:
         summary="results/rmats/post/summary.txt",
     log:
-        "logs/rmats_post/rmats_post.log",
+        "logs/rmats/rmats_post.log",
     params:
         tmp="results/rmats/prep",
         outdir="results/rmats/post",
@@ -117,7 +117,7 @@ rule rmats_stat:
     output:
         summary="results/rmats/stat/{contrast}/summary.txt",
     log:
-        "logs/rmats_stat/{contrast}.log",
+        "logs/rmats/stat/{contrast}.log",
     params:
         stat_dir="results/rmats/stat/{contrast}",
         stat_tmp_dir="results/rmats/stat/{contrast}/tmp",
