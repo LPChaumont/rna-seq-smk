@@ -28,7 +28,7 @@ rule install_pairedBamToBed12:
         " && git clone {params.link}"
         " && cd pairedBamToBed12/"
         " && make "
-        " && export PATH=$PWD/{output}:$PATH"
+        " && export PATH=$PWD/bin:$PATH"
 
 
 rule coco_ca:
@@ -85,7 +85,6 @@ rule merge_coco_quant:
         "../scripts/merge_coco_quant.py"
 
 
-# TODO fix error: pairedBamToBed12 is/are not installed
 rule coco_cb:
     input:
         coco="resources/coco/bin/coco.py",
@@ -99,8 +98,7 @@ rule coco_cb:
     conda:
         "../envs/coco.yaml"
     shell:
-        "export PATH=$PWD/{input.pb2b}:$PATH"
-        " && python {input.coco} cb"
+        "python {input.coco} cb"
         " --ucsc_compatible"
         " --thread {resources.threads}"
         " {input.bam}"
