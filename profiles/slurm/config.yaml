@@ -13,9 +13,9 @@ cluster:
 
 
 default-resources:
-    threads: 1
-    mem_gb: 1
-    time: 0-1:00
+    - threads=1
+    - mem_gb=1
+    - time='0-1:00'
 
 
 set-resources:
