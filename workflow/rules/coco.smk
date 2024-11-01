@@ -117,5 +117,5 @@ rule coco_sort_bg:
     shell:
         "sort --parallel {resources.threads} -k1,1 -k2,2n {input.unsorted_bedgraph}"
         " | sed 's/chrM/chrMT/g' > {output.sorted_bedgraph}"
-        " && rm {input.unsorted_bedgraph}"
+        #" && rm {input.unsorted_bedgraph}"
         " &> {log}"
