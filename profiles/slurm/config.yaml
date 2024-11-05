@@ -86,8 +86,8 @@ set-resources:
         time: 0-12:00
 
     coco_sort_bg:
-        threads: 4
-        mem_gb: 6
+        threads: 1
+        mem_gb: 4
         time: 0-1:00
 
     rmats_prep:
