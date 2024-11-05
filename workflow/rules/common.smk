@@ -168,7 +168,9 @@ def all_input(wildcards):
                 "results/coco_cc/coco_{counttype}.tsv",
                 counttype=["counts", "cpm", "tpm"],
             )
-            + expand("results/coco_cb/bedgraph/{sample}.bedgraph", sample=SAMPLES)
+            + expand(
+                "results/coco_cb/{sample}_sorted.bedgraph", sample=SAMPLES
+            )
         )
     # rMATS
     if config["rmats"]["activate"]:

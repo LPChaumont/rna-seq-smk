@@ -24,11 +24,10 @@ rule install_pairedBamToBed12:
     conda:
         "../envs/coco.yaml"
     shell:
-        "cd resources/ "
+        "cd resources/"
         " && git clone {params.link}"
         " && cd pairedBamToBed12/"
-        " && make "
-        " && export PATH=$PWD/bin:$PATH"
+        " && make"
 
 
 rule coco_ca:
@@ -90,15 +89,17 @@ rule coco_cb:
         coco="resources/coco/bin/coco.py",
         bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
         chrNameLength="results/star_index/chrNameLength.txt",
-        pb2b="resources/pairedBamToBed12/bin",
     output:
-        unsorted_bedgraph="results/coco_cb/bedgraph/{sample}_unsorted.bedgraph.bed12",
+        unsorted_bedgraph="results/coco_cb/{sample}_unsorted.bedgraph",
+    params:
+        pb2b="resources/pairedBamToBed12/bin",
     log:
         "logs/coco/coco_cb/{sample}.log",
     conda:
         "../envs/coco.yaml"
     shell:
-        "python {input.coco} cb"
+        "export PATH=$PATH:$PWD/{params.pb2b} &&"
+        " python {input.coco} cb"
         " --ucsc_compatible"
         " --thread {resources.threads}"
         " {input.bam}"
@@ -109,13 +110,12 @@ rule coco_cb:
 
 rule coco_sort_bg:
     input:
-        unsorted_bedgraph="results/coco_cb/bedgraph/{sample}_unsorted.bedgraph.bed12",
+        unsorted_bedgraph="results/coco_cb/{sample}_unsorted.bedgraph",
     output:
-        sorted_bedgraph="results/coco_cb/bedgraph/{sample}.bedgraph",
+        sorted_bedgraph="results/coco_cb/{sample}_sorted.bedgraph",
     log:
         "logs/coco/sort_bg/{sample}.log",
     shell:
-        "sort --parallel {resources.threads} -k1,1 -k2,2n {input.unsorted_bedgraph}"
+        "sort -k1,1 -k2,2n {input.unsorted_bedgraph}"
         " | sed 's/chrM/chrMT/g' > {output.sorted_bedgraph}"
-        #" && rm {input.unsorted_bedgraph}"
-        " &> {log}"
+        " && rm {input.unsorted_bedgraph}"
