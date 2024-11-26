@@ -12,3 +12,4 @@ dependencies:
   - r-rcolorbrewer
   - bioconductor-rtracklayer=1.62.0
   - r-jsonlite=1.8.8
+  - pandas=2.2.3

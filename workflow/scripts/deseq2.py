@@ -117,7 +117,9 @@ def design_in_sample_sheet(design, samples):
     with open(samples, 'r') as f:
         header = f.readline().strip().split('\t')
         variables = design.split('~')[1].split('+')
-
+    
+    # In case reduced design is '~1'
+    variables = [var for var in variables if var != '1']
     missing_var = [var for var in variables if var not in header]
 
     if missing_var:

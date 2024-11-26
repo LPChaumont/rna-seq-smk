@@ -13,17 +13,17 @@ ref:
   # genome build
   build: GRCh38
   # Custom gtf, genome and/or transcriptome overwrites other reference info above.
-  # Use the full path or the relative path from the workflow directory.
+  # Use the full path or the relative path from the Snakemake directory.
   # Leave it empty if you want to download from Ensembl.
-  custom_gtf:
+  custom_gtf: resources/ensembl.homo_sapiens.GRCh38.112.snoRNA_scaRNA_removed.snoDBv2.GtRNAdbv22.gtf
   custom_genome:
   custom_transcriptome:
 
 salmon:
-  activate: true
+  activate: false
 
 coco:
-  activate: false
+  activate: true
 
 rmats:
   activate: true
@@ -37,17 +37,15 @@ deseq2:
   # Optional: Reduced design formula for likelihood ratio test (no spaces).
   # Set to `false` or leave empty if not used.
   reduced_model: ~1
+  # Optional: Path to a file with one gene ID per line for size factor estimation. Set to `false` if not used.
+  control_genes: false
+  # Use TPM for filtering gene expression. Set to `false` to use raw counts.
+  tpm: true
+  # Minimum gene expression level.
+  min_gene_expr: 1
+  # Minimum number of samples in which a gene must be expressed.
+  min_samps_gene_expr: 3
   # Significance threshold for adjusted p-values.
   padj: 0.05
   # Significance threshold for absolute log2 fold change.
   lfc: 1
-  # Minimum gene expression level.
-  min_gene_expr: 1
-  # Minimum number of samples in which a gene must be expressed.
-  # minimal number of replicates in any of the conditions
-  min_samps_gene_expr: 3
-  # Use TPM for filtering gene expression. Set to `false` to use raw counts.
-  tpm: true
-  # Optional: Path to a file with one gene ID per line for size factor estimation.
-  # Leave empty or set to `false` if not used.
-  control_genes: false

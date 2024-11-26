@@ -1,6 +1,6 @@
-log <- file(snakemake@log[[1]], open = "wt")
-sink(log)
-sink(log, type = "message")
+#log <- file(snakemake@log[[1]], open = "wt")
+#sink(log)
+#sink(log, type = "message")
 
 library(DESeq2)
 library(ggplot2)
@@ -229,13 +229,7 @@ dds <- DESeq2::DESeqDataSetFromMatrix(
 
 saveRDS(dds, file.path(outdir_path, "raw_dds.rds"))
 
-dds <- pre_filter_dds(dds,
-  tpm_path = tpm_path,
-  min_gene_expr = min_gene_expr,
-  min_samps_gene_expr = min_samps_gene_expr,
-  samples_df = samples_df
-)
-
+# Estimate size factors
 if (control_genes_path != "") {
   message("Estimating size factors\n")
 } else {
@@ -243,6 +237,14 @@ if (control_genes_path != "") {
 }
 
 estimate_size_factors(dds, control_genes_path, outdir_path)
+
+# Pre-filtering
+dds <- pre_filter_dds(dds,
+  tpm_path = tpm_path,
+  min_gene_expr = min_gene_expr,
+  min_samps_gene_expr = min_samps_gene_expr,
+  samples_df = samples_df
+)
 
 
 # Differential expression analysis with the Wald test --------------------------
