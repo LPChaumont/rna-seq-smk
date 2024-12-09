@@ -84,7 +84,7 @@ rule merge_coco_quant:
         "../scripts/merge_coco_quant.py"
 
 
-rule coco_filter_quant:
+rule coco_filter_tpm:
     input:
         tpm="results/coco_cc/coco_tpm.tsv",
         samples=config["samples"],
