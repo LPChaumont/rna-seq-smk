@@ -3,14 +3,23 @@ import sys
 
 sys.stderr = open(snakemake.log[0], "w")
 
+biotype_dict = {}
+with open(snakemake.input.gtf) as f:
+    for line in f:
+        if 'gene_id' in line and 'gene_biotype' in line:
+            gene_id = line.split('gene_id "')[1].split('"')[0]
+            gene_biotype = line.split('gene_biotype "')[1].split('"')[0]
+            biotype_dict[gene_id] = gene_biotype
+
 for i, file in enumerate(sorted(snakemake.input.quants)):
     sample = file.split('/')[-1].replace('.tsv', '')
     df = pd.read_table(file)
+    df['gene_biotype'] = df['gene_id'].map(biotype_dict)
 
     if i == 0:
-        counts_df = df[['gene_id', 'gene_name', 'count']].rename(columns={'count': sample})
-        cpm_df = df[['gene_id', 'gene_name', 'cpm']].rename(columns={'cpm': sample})
-        tpm_df = df[['gene_id', 'gene_name', 'tpm']].rename(columns={'tpm': sample})
+        counts_df = df[['gene_id', 'gene_name', 'gene_biotype', 'count']].rename(columns={'count': sample})
+        cpm_df = df[['gene_id', 'gene_name', 'gene_biotype', 'cpm']].rename(columns={'cpm': sample})
+        tpm_df = df[['gene_id', 'gene_name', 'gene_biotype', 'tpm']].rename(columns={'tpm': sample})
 
     else:
         counts_df[sample] = counts_df['gene_id'].map(dict(zip(df.gene_id, df['count'])))

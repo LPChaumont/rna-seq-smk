@@ -85,7 +85,7 @@ def get_deseq2_extra():
     extra = ""
 
     if config["deseq2"]["tpm"]:
-        extra += "--tpm results/coco_cc/coco_tpm.tsv "
+        extra += "--tpm results/coco_cc/filtered_coco_tpm.tsv "
 
     if config["deseq2"]["reduced_model"]:
         extra += "--reduced-model " + config["deseq2"]["reduced_model"]
@@ -168,6 +168,7 @@ def all_input(wildcards):
                 "results/coco_cc/coco_{counttype}.tsv",
                 counttype=["counts", "cpm", "tpm"],
             )
+            + ["results/coco_cc/filtered_coco_tpm.tsv"]
             + expand("results/coco_cb/{sample}.bigwig", sample=SAMPLES)
         )
     # rMATS

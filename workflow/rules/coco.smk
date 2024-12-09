@@ -84,6 +84,26 @@ rule merge_coco_quant:
         "../scripts/merge_coco_quant.py"
 
 
+rule coco_filter_quant:
+    input:
+        tpm="results/coco_cc/coco_tpm.tsv",
+        samples=config["samples"],
+    output:
+        filtered="results/coco_cc/filtered_coco_tpm.tsv",
+    log:
+        "logs/coco/filter_coco_quant.log",
+    conda:
+        "../envs/coco.yaml"
+    shell:
+        "python workflow/scripts/filter_gene_expression.py"
+        " --input {input.tpm}"
+        " --samples {input.samples}"
+        " --min_gene_expr 1"
+        " --min_condition_expr 1"
+        " --save"
+        " &> {log}"
+
+
 rule coco_cb:
     input:
         coco="resources/coco/bin/coco.py",
