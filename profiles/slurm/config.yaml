@@ -29,11 +29,6 @@ set-resources:
         mem_gb: 4
         time: 0-0:30
 
-    trimmomatic:
-        threads: 4
-        mem_gb: 2
-        time: 0-1:00
-
     salmon_index:
         threads: 4
         mem_gb: 24

@@ -121,14 +121,6 @@ def all_input(wildcards):
 
     # fastp
     wanted_input.extend(expand("results/fastp/{sample}_fastp.html", sample=SAMPLES))
-    # trimmomatic
-    wanted_input.extend(
-        expand(
-            "results/trimmomatic/{sample}_{read}.fastq.gz",
-            sample=SAMPLES,
-            read=["R1", "R2"],
-        )
-    )
     # STAR
     wanted_input.extend(
         expand(
