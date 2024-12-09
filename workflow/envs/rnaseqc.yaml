@@ -1,9 +1,0 @@
-channels:
-  - conda-forge
-  - bioconda
-  - nodefaults
-dependencies:
-  - rna-seqc=2.3.5
-  - pandas=2.2.2
-  - numpy=2.1.1
-  - bx-python=0.12.0

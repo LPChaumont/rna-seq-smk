@@ -100,15 +100,12 @@ def get_multiqc_input(wildcards):
 
     input = (
         expand("results/fastp/{sample}_fastp.json", sample=SAMPLES)
-        + expand("results/qualimap_bamqc/{sample}", sample=SAMPLES)
-        + expand("results/qualimap_rnaseq/{sample}", sample=SAMPLES)
         + expand(
             "results/star_align/{sample}/Aligned.sortedByCoord.out.bam", sample=SAMPLES
         )
         + expand("results/sam_stats/{sample}.txt", sample=SAMPLES)
         + expand("results/sam_flagstat/{sample}.tsv", sample=SAMPLES)
         + expand("results/sam_idxstats/{sample}.tsv", sample=SAMPLES)
-        + expand("results/rnasesqc/{sample}", sample=SAMPLES)
     )
     if config["salmon"]["activate"]:
         input += expand(
@@ -147,12 +144,6 @@ def all_input(wildcards):
         + expand(
             "results/star_align/{sample}/Aligned.sortedByName.out.bam", sample=SAMPLES
         )
-    )
-    # qualimap
-    wanted_input.extend(
-        expand("results/qualimap_bamqc/{sample}", sample=SAMPLES)
-        + expand("results/qualimap_rnaseq/{sample}", sample=SAMPLES)
-        + ["results/qualimap_multi_bamqc"]
     )
     # salmon
     if config["salmon"]["activate"]:
@@ -200,7 +191,5 @@ def download_input(wildcards):
     wanted_input.extend(["resources/coco", "resources/pairedBamToBed12/bin"])
     # rMATS
     wanted_input.extend(["resources/install_r_deps.R", "resources/PAIRADISE"])
-    # RNA-SeQC
-    wanted_input.extend(["resources/collapse_annotation.py"])
 
     return wanted_input
