@@ -11,4 +11,5 @@ rule multiqc:
         "multiqc results"
         " --outdir {output}"
         " --force"
+        " --verbose"
         " &> {log}"
