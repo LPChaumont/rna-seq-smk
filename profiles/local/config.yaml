@@ -6,8 +6,8 @@ printshellcmds: True
 
 
 default-resources:
-  - mem_gb=4
-  - time='0-1:00' # needs quote
+  - mem_gb=1
+  - time='0-0:10' # needs quote
   - threads=1
 
 

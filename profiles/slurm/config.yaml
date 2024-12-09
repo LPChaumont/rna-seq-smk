@@ -14,11 +14,16 @@ cluster:
 
 default-resources:
     - threads=1
-    - mem_gb=1
+    - mem_gb=4
     - time='0-1:00'
 
 
 set-resources:
+    deseq2:
+        threads: 1
+        mem_gb: 4
+        time: 0-1:00
+
     fastp:
         threads: 3
         mem_gb: 4
@@ -48,28 +53,6 @@ set-resources:
         threads: 4
         mem_gb: 36
         time: 0-2:00
-
-    sam_sort_by_name:
-        threads: 32
-        mem_gb: 8
-        time: 0-3:00
-
-    qualimap_bamqc:
-        threads: 4
-        mem_gb: 4
-        time: 0-1:00
-
-    qualimap_rnaseq:
-        mem_gb: 16
-        time: 0-1:00
-
-    collapse_gtf:
-        mem_gb: 3
-        time: 0-0:30
-
-    rnaseqc:
-        mem_gb: 1
-        time: 0-0:30
 
     coco_ca:
         mem_gb: 8
