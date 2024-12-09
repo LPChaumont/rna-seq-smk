@@ -1,6 +1,7 @@
 rule deseq2:
     input:
         raw_counts="results/coco_cc/coco_counts.tsv",
+        filtered_tpm="results/coco_cc/filtered_coco_tpm.tsv",
         samples=config["samples"],
         contrasts=config["contrasts"],
     output:

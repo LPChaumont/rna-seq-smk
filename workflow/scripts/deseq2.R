@@ -88,11 +88,9 @@ pre_filter_dds <- function(dds, tpm_path, min_gene_expr, min_samps_gene_expr, sa
       "Minimal number of samples where genes should be expressed: ", min_samps_gene_expr, "\n"
     )
     tpm_df <- read_tpm_file(tpm_path)
-
-    tpm_df <- tpm_df[, sapply(tpm_df, is.numeric)]
-    keep <- rowSums(tpm_df >= min_gene_expr) >= min_samps_gene_expr
-    keep <- row.names(tpm_df[keep, ])
+    keep <- row.names(tpm_df)
     dds <- dds[row.names(dds) %in% keep, ]
+
   } else {
     message(
       "\nPre-filtering gene expression with counts:\n",
