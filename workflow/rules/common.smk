@@ -141,9 +141,6 @@ def all_input(wildcards):
         expand("results/sam_stats/{sample}.txt", sample=SAMPLES)
         + expand("results/sam_flagstat/{sample}.tsv", sample=SAMPLES)
         + expand("results/sam_idxstats/{sample}.tsv", sample=SAMPLES)
-        + expand(
-            "results/star_align/{sample}/Aligned.sortedByName.out.bam", sample=SAMPLES
-        )
     )
     # salmon
     if config["salmon"]["activate"]:
