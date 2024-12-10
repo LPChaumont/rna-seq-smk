@@ -1,11 +1,5 @@
-*
-
-!config/
-!config/**
-!profiles/
-!profiles/**
-!workflow/
-!workflow/**
-
-!.gitignore
-!README.md
+results/**
+resources/**
+logs*/**
+.snakemake
+.snakemake/**
