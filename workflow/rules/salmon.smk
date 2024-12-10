@@ -39,7 +39,7 @@ rule salmon_quant:
     shell:
         "salmon quant"
         " -i {input.index}"
-        " --libType A"
+        " --libType ISF"
         " -1 {input.fq1}"
         " -2 {input.fq2}"
         " -o {params.outdir}"
