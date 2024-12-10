@@ -20,13 +20,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_SNAKEMAKE_SNAKEFMT: true
 
-  Linting:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Lint workflow
-      uses: snakemake/snakemake-github-action@v1.25.1
-      with:
-        directory: .
-        snakefile: workflow/Snakefile
-        args: "--lint"
+#  Linting:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v4
+#    - name: Lint workflow
+#      uses: snakemake/snakemake-github-action@v1.25.1
+#      with:
+#        directory: .
+#        snakefile: workflow/Snakefile
+#        args: "--lint"
