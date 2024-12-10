@@ -73,6 +73,21 @@ set-resources:
         mem_gb: 2
         time: 0-1:00
 
+    rmats_post:
+        threads: 1
+        mem_gb: 2
+        time: 0-0:30
+
+    rmats_stat:
+        threads: 1
+        mem_gb: 2
+        time: 0-0:30
+
+    rmats_filtering:
+        threads: 1
+        mem_gb: 2
+        time: 0-0:15
+
 
 immediate-submit: True
 jobs: 999 
