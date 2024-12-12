@@ -97,5 +97,6 @@ use-envmodules: False
 keep-going: True
 notemp: True
 printshellcmds: True
+show-failed-logs: True
 rerun-triggers: mtime
 verbose: False
