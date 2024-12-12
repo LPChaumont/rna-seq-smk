@@ -33,7 +33,7 @@ rule install_pairedBamToBed12:
 rule coco_ca:
     input:
         coco="resources/coco/bin/coco.py",
-        gtf=get_gtf(),
+        gtf=get_ref_file(config["ref"]["gtf"]),
     output:
         coco_gtf="results/coco_ca/correct_annotation.gtf",
     log:
@@ -70,7 +70,7 @@ rule coco_cc:
 
 rule merge_coco_quant:
     input:
-        gtf=get_gtf(),
+        gtf=get_ref_file(config["ref"]["gtf"]),
         quants=expand("results/coco_cc/{sample}.tsv", sample=SAMPLES),
     output:
         counts="results/coco_cc/coco_counts.tsv",
@@ -143,7 +143,7 @@ rule coco_sort_bg:
 
 rule chromsize:
     input:
-        fasta=get_genome(),
+        fasta=get_ref_file(config["ref"]["dna_fasta"]),
     output:
         chromsize="resources/chrom_sizes.tsv",
     log:

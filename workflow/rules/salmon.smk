@@ -1,7 +1,7 @@
 rule salmon_index:
     input:
-        genome=get_genome(),
-        transcriptome=get_full_transcriptome(),
+        genome=get_ref_file(config["ref"]["dna_fasta"]),
+        transcriptome=get_transcriptome(),
     output:
         decoys="results/salmon_index/decoys.txt",
         gentrome="results/salmon_index/gentrome.fa",
@@ -49,7 +49,7 @@ rule salmon_quant:
 
 rule salmon_tximport:
     input:
-        gtf=get_gtf(),
+        gtf=get_ref_file(config["ref"]["gtf"]),
         quant=expand("results/salmon_quant/{sample}/quant.sf", sample=SAMPLES),
     output:
         tx_tpm="results/salmon_quant/salmon_tpm_gene.tsv",

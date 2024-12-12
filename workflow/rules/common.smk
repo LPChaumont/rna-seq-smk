@@ -12,42 +12,19 @@ contrasts = pd.read_table(
 ).set_index("contrast", drop=False)
 CONTRASTS = contrasts["contrast"]
 
-SPECIES = config["ref"]["species"]
-BUILD = config["ref"]["build"]
-RELEASE = config["ref"]["release"]
-TRANSCRIPTOME_DATATYPES = ["cdna", "ncrna"]
+
+def get_ref_file(file_path):
+    def remove_gz(path):
+        return path[:-3] if path.endswith(".gz") else path
+
+    if os.path.isfile(file_path):
+        return file_path
+
+    return remove_gz(os.path.join("resources", os.path.basename(file_path)))
 
 
-def get_genome():
-    if config["ref"]["custom_genome"]:
-        return config["ref"]["custom_genome"]
-
-    return f"resources/ensembl.{SPECIES}.{BUILD}.primary_assembly.fa"
-
-
-def get_gtf():
-    if config["ref"]["custom_gtf"]:
-        return config["ref"]["custom_gtf"]
-
-    return f"resources/ensembl.{SPECIES}.{BUILD}.{RELEASE}.gtf"
-
-
-def get_transcriptome(wildcards):
-    if config["ref"]["custom_transcriptome"]:
-        return config["ref"]["custom_transcriptome"]
-
-    return f"resources/ensembl.{SPECIES}.{BUILD}.{RELEASE}.{wildcards.datatype}.fa"
-
-
-def get_full_transcriptome():
-    if config["ref"]["custom_transcriptome"]:
-        return config["ref"]["custom_transcriptome"]
-
-    return (
-        f"resources/ensembl.{SPECIES}.{BUILD}.{RELEASE}."
-        + ".".join(TRANSCRIPTOME_DATATYPES)
-        + ".fa"
-    )
+def get_transcriptome():
+    return os.path.join("resources", "cdna_ncrna.fa")
 
 
 def get_fastqs(wildcards):
@@ -175,7 +152,9 @@ def download_input(wildcards):
     wanted_input = []
 
     # ref
-    wanted_input.extend([get_full_transcriptome(), get_genome(), get_gtf()])
+    wanted_input.extend(
+        [get_ref_file(ref) for ref in config["ref"].values()] + [get_transcriptome()]
+    )
     # CoCo
     wanted_input.extend(["resources/coco", "resources/pairedBamToBed12/bin"])
     # rMATS

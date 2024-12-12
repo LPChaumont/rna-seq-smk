@@ -1,7 +1,7 @@
 rule star_index:
     input:
-        genome=get_genome(),
-        gtf=get_gtf(),
+        genome=get_ref_file(config["ref"]["dna_fasta"]),
+        gtf=get_ref_file(config["ref"]["gtf"]),
     output:
         chrNameLength="results/star_index/chrNameLength.txt",
     log:

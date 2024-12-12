@@ -4,20 +4,13 @@ contrasts: config/contrasts.tsv
 # Read length. Used by STAR and rMATS
 read_length: 80
 
-# Download gtf, genome and transcriptome (cdna and ncrna) from Ensembl.
+# Download GTF, genome, and transcriptome (cDNA and ncRNA) data.
+# You can either specify the full path to your local files or use the links to Ensembl's FTP server.
 ref:
-  # ensembl species name
-  species: homo_sapiens
-  # ensembl release version
-  release: "112"
-  # genome build
-  build: GRCh38
-  # Custom gtf, genome and/or transcriptome overwrites other reference info above.
-  # Use the full path or the relative path from the Snakemake directory.
-  # Leave it empty if you want to download from Ensembl.
-  custom_gtf: resources/ensembl.homo_sapiens.GRCh38.112.snoRNA_scaRNA_removed.snoDBv2.GtRNAdbv22.gtf
-  custom_genome:
-  custom_transcriptome:
+  gtf: resources/ensembl.homo_sapiens.GRCh38.112.snoDB.GtRNAdb.gtf
+  dna_fasta: https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+  cdna_fasta: https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
+  ncrna_fasta: https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/ncrna/Homo_sapiens.GRCh38.ncrna.fa.gz
 
 salmon:
   activate: false

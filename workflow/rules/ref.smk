@@ -1,69 +1,62 @@
 localrules:
-    get_genome,
     get_gtf,
-    get_transcriptome,
-    build_full_transcriptome,
-
-
-rule get_genome:
-    output:
-        get_genome(),
-    params:
-        species=SPECIES,
-        release=RELEASE,
-        build=BUILD,
-        datatype="dna",
-    log:
-        "logs/ref/get_genome.log",
-    wrapper:
-        "v3.14.1/bio/reference/ensembl-sequence"
+    get_dna_fasta,
+    get_cdna_fasta,
+    get_ncrna_fasta,
+    concat_cdna_ncrna_fasta,
 
 
 rule get_gtf:
     output:
-        get_gtf(),
+        get_ref_file(config["ref"]["gtf"]),
     params:
-        species=SPECIES,
-        release=RELEASE,
-        build=BUILD,
+        url=config["ref"]["gtf"],
     log:
         "logs/ref/get_gtf.log",
-    wrapper:
-        "v3.14.1/bio/reference/ensembl-annotation"
-
-
-rule get_transcriptome:
-    output:
-        ".".join(["resources/ensembl", SPECIES, BUILD, RELEASE, "{datatype}", "fa"]),
-    params:
-        species=SPECIES,
-        release=RELEASE,
-        build=BUILD,
-        datatype="{datatype}",
-    log:
-        "logs/ref/get_{datatype}_transcriptome.log",
-    wrapper:
-        "v1.7.1/bio/reference/ensembl-sequence"
-
-
-rule build_full_transcriptome:
-    input:
-        expand(
-            ".".join(
-                [
-                    "resources/ensembl",
-                    SPECIES,
-                    BUILD,
-                    RELEASE,
-                    "{datatype}",
-                    "fa",
-                ]
-            ),
-            datatype=TRANSCRIPTOME_DATATYPES,
-        ),
-    output:
-        get_full_transcriptome(),
-    log:
-        "logs/ref/build_full_transcriptome.log",
     shell:
-        "cat {input} > {output}"
+        "curl -L {params.url} | gzip -d >> {output} 2> {log}"
+
+
+rule get_dna_fasta:
+    output:
+        get_ref_file(config["ref"]["dna_fasta"]),
+    params:
+        url=config["ref"]["dna_fasta"],
+    log:
+        "logs/ref/get_dna_fasta.log",
+    shell:
+        "curl -L {params.url} | gzip -d >> {output} 2> {log}"
+
+
+rule get_cdna_fasta:
+    output:
+        get_ref_file(config["ref"]["cdna_fasta"]),
+    params:
+        url=config["ref"]["cdna_fasta"],
+    log:
+        "logs/ref/get_cdna_fasta.log",
+    shell:
+        "curl -L {params.url} | gzip -d >> {output} 2> {log}"
+
+
+rule get_ncrna_fasta:
+    output:
+        get_ref_file(config["ref"]["ncrna_fasta"]),
+    params:
+        url=config["ref"]["ncrna_fasta"],
+    log:
+        "logs/ref/get_ncrna_fasta.log",
+    shell:
+        "curl -L {params.url} | gzip -d >> {output} 2> {log}"
+
+
+rule concat_cdna_ncrna_fasta:
+    input:
+        cdna=get_ref_file(config["ref"]["cdna_fasta"]),
+        ncrna=get_ref_file(config["ref"]["ncrna_fasta"]),
+    output:
+        get_transcriptome(),
+    log:
+        "logs/ref/concat_cdna_ncrna_fasta.log",
+    shell:
+        "cat {input.cdna} {input.ncrna} > {output}"
