@@ -13,14 +13,19 @@ contrasts = pd.read_table(
 CONTRASTS = contrasts["contrast"]
 
 
-def get_ref_file(file_path):
-    def remove_gz(path):
-        return path[:-3] if path.endswith(".gz") else path
+def get_ref_file(path):
+    if os.path.isfile(path):
+        return path
 
-    if os.path.isfile(file_path):
-        return file_path
+    base_name = os.path.basename(path)
+    fout = os.path.join("resources", base_name)
+    return os.path.splitext(fout)[0]
 
-    return remove_gz(os.path.join("resources", os.path.basename(file_path)))
+
+def get_ref_url(path):
+    if os.path.isfile(path):
+        return
+    return path
 
 
 def get_transcriptome():

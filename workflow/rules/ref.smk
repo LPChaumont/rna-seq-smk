@@ -10,44 +10,52 @@ rule get_gtf:
     output:
         get_ref_file(config["ref"]["gtf"]),
     params:
-        url=config["ref"]["gtf"],
+        lambda _: config["ref"]["gtf"],
     log:
         "logs/ref/get_gtf.log",
+    conda:
+        "../envs/ref.yaml"
     shell:
-        "curl -L {params.url} | gzip -d >> {output} 2> {log}"
+        "curl -L {params} | gzip -d >> {output} 2> {log}"
 
 
 rule get_dna_fasta:
     output:
         get_ref_file(config["ref"]["dna_fasta"]),
     params:
-        url=config["ref"]["dna_fasta"],
+        lambda _: config["ref"]["dna_fasta"],
     log:
         "logs/ref/get_dna_fasta.log",
+    conda:
+        "../envs/ref.yaml"
     shell:
-        "curl -L {params.url} | gzip -d >> {output} 2> {log}"
+        "curl -L {params} | gzip -d >> {output} 2> {log}"
 
 
 rule get_cdna_fasta:
     output:
         get_ref_file(config["ref"]["cdna_fasta"]),
     params:
-        url=config["ref"]["cdna_fasta"],
+        lambda _: config["ref"]["cdna_fasta"],
     log:
         "logs/ref/get_cdna_fasta.log",
+    conda:
+        "../envs/ref.yaml"
     shell:
-        "curl -L {params.url} | gzip -d >> {output} 2> {log}"
+        "curl -L {params} | gzip -d >> {output} 2> {log}"
 
 
 rule get_ncrna_fasta:
     output:
         get_ref_file(config["ref"]["ncrna_fasta"]),
     params:
-        url=config["ref"]["ncrna_fasta"],
+        lambda _: config["ref"]["ncrna_fasta"],
     log:
         "logs/ref/get_ncrna_fasta.log",
+    conda:
+        "../envs/ref.yaml"
     shell:
-        "curl -L {params.url} | gzip -d >> {output} 2> {log}"
+        "curl -L {params} | gzip -d >> {output} 2> {log}"
 
 
 rule concat_cdna_ncrna_fasta:
@@ -58,5 +66,7 @@ rule concat_cdna_ncrna_fasta:
         get_transcriptome(),
     log:
         "logs/ref/concat_cdna_ncrna_fasta.log",
+    conda:
+        "../envs/ref.yaml"
     shell:
         "cat {input.cdna} {input.ncrna} > {output}"

@@ -9,7 +9,7 @@ rule deseq2:
     log:
         "logs/deseq2.log",
     params:
-        outdir="results/deseq2",
+        outdir=lambda w, output: os.path.dirname(output[0]),
         padj=config["deseq2"]["padj"],
         lfc=config["deseq2"]["lfc"],
         min_gene_expr=config["deseq2"]["min_gene_expr"],

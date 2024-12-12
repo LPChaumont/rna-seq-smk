@@ -9,11 +9,13 @@ rule install_coco:
         "resources/coco/bin/coco.py",
     params:
         link="https://github.com/scottgroup/coco.git",
+    log:
+        "logs/coco/install_coco.log",
     conda:
         "../envs/coco.yaml"
     shell:
         "cd resources/"
-        " && git clone {params.link}"
+        " && git clone {params.link} &> {log}"
 
 
 rule install_pairedBamToBed12:
@@ -21,13 +23,15 @@ rule install_pairedBamToBed12:
         directory("resources/pairedBamToBed12/bin"),
     params:
         link="https://github.com/Population-Transcriptomics/pairedBamToBed12.git",
+    log:
+        "logs/coco/install_pairedBamToBed12.log",
     conda:
         "../envs/coco.yaml"
     shell:
         "cd resources/"
-        " && git clone {params.link}"
+        " && git clone {params.link} &> {log}"
         " && cd pairedBamToBed12/"
-        " && make"
+        " && make &>> {log}"
 
 
 rule coco_ca:
@@ -135,6 +139,8 @@ rule coco_sort_bg:
         sorted_bedgraph="results/coco_cb/{sample}_sorted.bedgraph",
     log:
         "logs/coco/sort_bg/{sample}.log",
+    conda:
+        "../envs/coco.yaml"
     shell:
         "sort -k1,1 -k2,2n {input.unsorted_bedgraph}"
         " | sed 's/chrM/chrMT/g' > {output.sorted_bedgraph}"

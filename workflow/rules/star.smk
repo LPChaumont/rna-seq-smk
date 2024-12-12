@@ -7,9 +7,9 @@ rule star_index:
     log:
         "logs/star/star_index.log",
     params:
-        index_dir="results/star_index",
+        index_dir=lambda w, output: os.path.dirname(output[0]),
         tmp="results/star_index/STARtmp",
-        read_length=config["read_length"] - 1,
+        read_length=lambda _: int(config["read_length"]) - 1,
     conda:
         "../envs/star.yaml"
     shell:
@@ -34,8 +34,8 @@ rule star_align:
     log:
         "logs/star/align/{sample}.log",
     params:
-        prefix="results/star_align/{sample}/",
-        index_dir="results/star_index",
+        prefix=lambda w, output: os.path.dirname(output[0]),
+        index_dir=lambda w, input: os.path.dirname(input.idx),
     conda:
         "../envs/star.yaml"
     shell:

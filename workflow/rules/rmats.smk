@@ -9,13 +9,15 @@ rule install_pairadise:
     params:
         link_pairadise="https://github.com/Xinglab/PAIRADISE.git",
         link_r_deps="https://raw.githubusercontent.com/Xinglab/rmats-turbo/master/install_r_deps.R",
+    log:
+        "logs/rmats/install_pairadise.log",
     conda:
         "../envs/rmats.yaml"
     shell:
         "cd resources/"
-        " && git clone {params.link_pairadise}"
-        " && wget {params.link_r_deps}"
-        " && Rscript install_r_deps.R paired"
+        " && git clone {params.link_pairadise} 2> {log}"
+        " && wget {params.link_r_deps} 2>> {log}"
+        " && Rscript install_r_deps.R paired 2>> {log}"
 
 
 rule rmats_config_prep:
@@ -24,10 +26,14 @@ rule rmats_config_prep:
     output:
         config="results/rmats/bam_config_prep/{sample}.txt",
     params:
-        outdir="results/rmats/bam_config_prep",
+        outdir=lambda w, output: os.path.dirname(output[0]),
+    log:
+        "logs/rmats/rmats_config_prep/{sample}.log",
+    conda:
+        "../envs/rmats.yaml"
     shell:
         "mkdir -p {params.outdir}"
-        " && echo {input.bam} > {output.config}"
+        " && echo {input.bam} > {output.config} 2> {log}"
 
 
 rule rmats_config_post:
@@ -39,10 +45,14 @@ rule rmats_config_post:
     output:
         config="results/rmats/bam_config_post/all_samples.txt",
     params:
-        outdir="results/rmats/bam_config_post",
+        outdir=lambda w, output: os.path.dirname(output[0]),
+    log:
+        "logs/rmats/rmats_config_post.log",
+    conda:
+        "../envs/rmats.yaml"
     shell:
         "mkdir -p {params.outdir}"
-        " && echo {input.bam} | tr ' ' ',' > {output.config}"
+        " && echo {input.bam} | tr ' ' ',' > {output.config} 2> {log}"
 
 
 rule rmats_prep:
@@ -92,8 +102,8 @@ rule rmats_post:
     log:
         "logs/rmats/rmats_post.log",
     params:
-        tmp="results/rmats/prep",
-        outdir="results/rmats/post",
+        tmp="results/rmats/post/tmp",
+        outdir=lambda w, output: os.path.dirname(output[0]),
         read_length=config["read_length"],
     conda:
         "../envs/rmats.yaml"
@@ -121,11 +131,11 @@ rule rmats_stat:
     log:
         "logs/rmats/stat/{contrast}.log",
     params:
-        stat_dir="results/rmats/stat/{contrast}",
+        stat_dir=lambda w, output: os.path.dirname(output[0]),
         stat_tmp_dir="results/rmats/stat/{contrast}/tmp",
-        post_dir="results/rmats/post",
-        group_1=lambda wc: get_rmats_group_indices(wc)[0],
-        group_2=lambda wc: get_rmats_group_indices(wc)[1],
+        post_dir=lambda w, input: os.path.dirname(input.post),
+        group_1=lambda w: get_rmats_group_indices(w)[0],
+        group_2=lambda w: get_rmats_group_indices(w)[1],
         paired_stats=use_rmats_pairadise(),
     conda:
         "../envs/rmats.yaml"
@@ -151,9 +161,13 @@ rule rmats_filtering:
     output:
         filtered="results/rmats/stat/{contrast}/{filter}_{event}.MATS.{junction}.txt",
     params:
-        outdir="results/rmats/stat/{contrast}",
+        outdir=lambda w, output: os.path.dirname(output[0]),
         # Relative path based on the output directory
         script="../../../../workflow/scripts/rmats_filtering.py",
+    log:
+        "logs/rmats/filtering/{contrast}_{filter}_{event}_{junction}.log",
+    conda:
+        "../envs/rmats.yaml"
     shell:
         "cd {params.outdir} &&"
         " python {params.script} {wildcards.event}.MATS.{wildcards.junction}.txt"

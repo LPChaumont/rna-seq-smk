@@ -33,7 +33,7 @@ rule salmon_quant:
     log:
         "logs/salmon/quant/{sample}.log",
     params:
-        outdir="results/salmon_quant/{sample}",
+        outdir=lambda w, output: os.path.dirname(output[0]),
     conda:
         "../envs/salmon.yaml"
     shell:
@@ -59,7 +59,7 @@ rule salmon_tximport:
     log:
         "logs/salmon/salmon_tximport.log",
     params:
-        quantdir="results/salmon_quant",
+        quantdir=lambda w, output: os.path.dirname(output[0]),
     conda:
         "../envs/deseq2.yaml"
     script:
