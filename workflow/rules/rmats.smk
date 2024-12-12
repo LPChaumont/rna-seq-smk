@@ -14,10 +14,12 @@ rule install_pairadise:
     conda:
         "../envs/rmats.yaml"
     shell:
-        "cd resources/"
-        " && git clone {params.link_pairadise} 2> {log}"
-        " && wget {params.link_r_deps} 2>> {log}"
-        " && Rscript install_r_deps.R paired 2>> {log}"
+        """
+        cd resources/
+        && git clone {params.link_pairadise} 2> {log}
+        && wget {params.link_r_deps} 2>> {log}
+        && Rscript install_r_deps.R paired 2>> {log}
+        """
 
 
 rule rmats_config_prep:
@@ -32,8 +34,9 @@ rule rmats_config_prep:
     conda:
         "../envs/rmats.yaml"
     shell:
-        "mkdir -p {params.outdir}"
-        " && echo {input.bam} > {output.config} 2> {log}"
+        """mkdir -p {params.outdir}
+        && echo {input.bam} > {output.config} 2> {log}
+        """
 
 
 rule rmats_config_post:
@@ -51,8 +54,10 @@ rule rmats_config_post:
     conda:
         "../envs/rmats.yaml"
     shell:
-        "mkdir -p {params.outdir}"
-        " && echo {input.bam} | tr ' ' ',' > {output.config} 2> {log}"
+        """
+        mkdir -p {params.outdir}
+        && echo {input.bam} | tr ' ' ',' > {output.config} 2> {log}
+        """
 
 
 rule rmats_prep:
@@ -72,24 +77,26 @@ rule rmats_prep:
     conda:
         "../envs/rmats.yaml"
     shell:
-        "rmats.py"
-        " --gtf {input.gtf}"
-        " --tmp {output.prep_dir}"
-        " --od {params.post_dir}"
-        " --readLength {params.read_length}"
-        " --b1 {input.config}"
-        " -t paired"
-        " --libType fr-secondstrand"
-        " --nthread {resources.threads}"
-        " --task prep"
-        " --variable-read-length"
-        " &> {log}"
-        " && mkdir -p {params.post_dir} {params.post_tmp_dir} "
-        " && python $CONDA_PREFIX/rMATS/cp_with_prefix.py"
-        " {params.prefix}"
-        " {params.post_tmp_dir}"
-        " {output.prep_dir}/*.rmats"
-        " &>> {log}"
+        """
+        rmats.py
+        --gtf {input.gtf}
+        --tmp {output.prep_dir}
+        --od {params.post_dir}
+        --readLength {params.read_length}
+        --b1 {input.config}
+        -t paired
+        --libType fr-secondstrand
+        --nthread {resources.threads}
+        --task prep
+        --variable-read-length
+        &> {log}
+        && mkdir -p {params.post_dir} {params.post_tmp_dir}
+        && python $CONDA_PREFIX/rMATS/cp_with_prefix.py
+        {params.prefix}
+        {params.post_tmp_dir}
+        {output.prep_dir}/*.rmats
+        &>> {log}
+        """
 
 
 rule rmats_post:
@@ -108,18 +115,20 @@ rule rmats_post:
     conda:
         "../envs/rmats.yaml"
     shell:
-        "rmats.py"
-        " --gtf {input.gtf}"
-        " --tmp {params.tmp}"
-        " --od {params.outdir}"
-        " --readLength {params.read_length}"
-        " --b1 {input.config}"
-        " -t paired"
-        " --nthread {resources.threads}"
-        " --task post"
-        " --variable-read-length"
-        " --statoff"
-        " &> {log}"
+        """
+        rmats.py"
+        --gtf {input.gtf}
+        --tmp {params.tmp}
+        --od {params.outdir}
+        --readLength {params.read_length}
+        --b1 {input.config}
+        -t paired
+        --nthread {resources.threads}
+        --task post
+        --variable-read-length
+        --statoff
+        &> {log}
+        """
 
 
 rule rmats_stat:
@@ -140,19 +149,21 @@ rule rmats_stat:
     conda:
         "../envs/rmats.yaml"
     shell:
-        "python $CONDA_PREFIX/rMATS/rMATS_P/prepare_stat_inputs.py"
-        " --new-output-dir {params.stat_dir}"
-        " --old-output-dir {params.post_dir}"
-        " --group-1-indices {params.group_1}"
-        " --group-2-indices {params.group_2}"
-        " &> {log}"
-        " && rmats.py"
-        " --nthread {resources.threads}"
-        " --od {params.stat_dir}"
-        " --tmp {params.stat_tmp_dir}"
-        " --task stat"
-        " {params.paired_stats}"
-        " &>> {log}"
+        """
+        python $CONDA_PREFIX/rMATS/rMATS_P/prepare_stat_inputs.py
+        --new-output-dir {params.stat_dir}
+        --old-output-dir {params.post_dir}
+        --group-1-indices {params.group_1}
+        --group-2-indices {params.group_2}
+        &> {log}
+        && rmats.py
+        --nthread {resources.threads}
+        --od {params.stat_dir}
+        --tmp {params.stat_tmp_dir}
+        --task stat
+        {params.paired_stats}
+        &>> {log}
+        """
 
 
 rule rmats_filtering:
@@ -169,5 +180,7 @@ rule rmats_filtering:
     conda:
         "../envs/rmats.yaml"
     shell:
-        "cd {params.outdir} &&"
-        " python {params.script} {wildcards.event}.MATS.{wildcards.junction}.txt"
+        """
+        cd {params.outdir} &&
+        python {params.script} {wildcards.event}.MATS.{wildcards.junction}.txt
+        """

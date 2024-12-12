@@ -14,8 +14,10 @@ rule install_coco:
     conda:
         "../envs/coco.yaml"
     shell:
-        "cd resources/"
-        " && git clone {params.link} &> {log}"
+        """
+        cd resources/
+        && git clone {params.link} &> {log}
+        """
 
 
 rule install_pairedBamToBed12:
@@ -28,10 +30,12 @@ rule install_pairedBamToBed12:
     conda:
         "../envs/coco.yaml"
     shell:
-        "cd resources/"
-        " && git clone {params.link} &> {log}"
-        " && cd pairedBamToBed12/"
-        " && make &>> {log}"
+        """
+        cd resources/
+        && git clone {params.link} &> {log}
+        && cd pairedBamToBed12/
+        && make &>> {log}
+        """
 
 
 rule coco_ca:
@@ -61,15 +65,17 @@ rule coco_cc:
     conda:
         "../envs/coco.yaml"
     shell:
-        "python {input.coco} cc"
-        " --countType both"
-        " --thread {resources.threads}"
-        " --strand 1"
-        " --paired"
-        " {input.coco_gtf}"
-        " {input.bam}"
-        " {output.quant}"
-        " &> {log}"
+        """
+        python {input.coco} cc
+        --countType both
+        --thread {resources.threads}
+        --strand 1
+        --paired
+        {input.coco_gtf}
+        {input.bam}
+        {output.quant}
+        &> {log}
+        """
 
 
 rule merge_coco_quant:
@@ -99,13 +105,15 @@ rule coco_filter_tpm:
     conda:
         "../envs/coco.yaml"
     shell:
-        "python workflow/scripts/filter_gene_expression.py"
-        " --input {input.tpm}"
-        " --samples {input.samples}"
-        " --min_gene_expr 1"
-        " --min_condition_expr 1"
-        " --save"
-        " &> {log}"
+        """
+        python workflow/scripts/filter_gene_expression.py
+        --input {input.tpm}
+        --samples {input.samples}
+        --min_gene_expr 1
+        --min_condition_expr 1
+        --save
+        &> {log}
+        """
 
 
 rule coco_cb:
@@ -122,14 +130,15 @@ rule coco_cb:
     conda:
         "../envs/coco.yaml"
     shell:
-        "export PATH=$PATH:$PWD/{params.pb2b} &&"
-        " python {input.coco} cb"
-        " --ucsc_compatible"
-        " --thread {resources.threads}"
-        " {input.bam}"
-        " {output.unsorted_bedgraph}"
-        " {input.chrNameLength}"
-        " &> {log}"
+        """
+        export PATH=$PATH:$PWD/{params.pb2b}
+        && python {input.coco} cb
+        --thread {resources.threads}
+        {input.bam}
+        {output.unsorted_bedgraph}
+        {input.chrNameLength}
+        &> {log}
+        """
 
 
 rule coco_sort_bg:
@@ -142,9 +151,11 @@ rule coco_sort_bg:
     conda:
         "../envs/coco.yaml"
     shell:
-        "sort -k1,1 -k2,2n {input.unsorted_bedgraph}"
-        " | sed 's/chrM/chrMT/g' > {output.sorted_bedgraph}"
-        " && rm {input.unsorted_bedgraph}"
+        """
+        sort -k1,1 -k2,2n {input.unsorted_bedgraph}
+        | sed 's/chrM/chrMT/g' > {output.sorted_bedgraph}
+        && rm {input.unsorted_bedgraph}
+        """
 
 
 rule chromsize:
@@ -175,5 +186,4 @@ rule coco_bg2bw:
     conda:
         "../envs/bedgraphtobigwig.yaml"
     shell:
-        "sed '$d' {input.bg} > {input.bg}.tmp && bedGraphToBigWig {input.bg}.tmp {input.chromsize} {output.bw} &> {log}"
-        " && rm {input.bg}.tmp"
+        "bedGraphToBigWig {input.bg} {input.chromsize} {output.bw} &> {log}"

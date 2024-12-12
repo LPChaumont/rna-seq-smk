@@ -21,10 +21,7 @@ rule sam_stats:
     conda:
         "../envs/samtools.yaml"
     shell:
-        "samtools stats {input}"
-        " -@ {resources.threads}"
-        " 1> {output}"
-        " 2> {log}"
+        "samtools stats {input} -@ {resources.threads} 1> {output} 2> {log}"
 
 
 rule sam_flagstat:
@@ -37,11 +34,7 @@ rule sam_flagstat:
     conda:
         "../envs/samtools.yaml"
     shell:
-        "samtools flagstat {input}"
-        " -@ {resources.threads}"
-        " --output-fmt tsv"
-        " 1> {output}"
-        " 2> {log}"
+        "samtools flagstat {input} -@ {resources.threads} --output-fmt tsv 1> {output} 2> {log}"
 
 
 rule sam_idxstats:
@@ -55,7 +48,4 @@ rule sam_idxstats:
     conda:
         "../envs/samtools.yaml"
     shell:
-        "samtools idxstats {input.bam}"
-        " -@ {resources.threads}"
-        " 1> {output}"
-        " 2> {log}"
+        "samtools idxstats {input.bam} -@ {resources.threads} 1> {output} 2> {log}"

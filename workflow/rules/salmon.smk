@@ -11,16 +11,18 @@ rule salmon_index:
     conda:
         "../envs/salmon.yaml"
     shell:
-        "grep '^>' {input.genome} |"
-        " cut -d ' ' -f 1 |"
-        " sed 's/>//g' > {output.decoys}"
-        " && cat {input.transcriptome} {input.genome} > {output.gentrome}"
-        " && salmon index"
-        " --threads {resources.threads}"
-        " --decoys {output.decoys}"
-        " --transcripts {output.gentrome}"
-        " --index {output.outdir}"
-        " &> {log}"
+        """
+        grep '^>' {input.genome} |
+        cut -d ' ' -f 1 |
+        sed 's/>//g' > {output.decoys}
+        && cat {input.transcriptome} {input.genome} > {output.gentrome}
+        && salmon index
+        --threads {resources.threads}
+        --decoys {output.decoys}
+        --transcripts {output.gentrome}
+        --index {output.outdir}
+        &> {log}
+        """
 
 
 rule salmon_quant:
@@ -37,14 +39,16 @@ rule salmon_quant:
     conda:
         "../envs/salmon.yaml"
     shell:
-        "salmon quant"
-        " -i {input.index}"
-        " --libType ISF"
-        " -1 {input.fq1}"
-        " -2 {input.fq2}"
-        " -o {params.outdir}"
-        " --threads {resources.threads}"
-        " &> {log}"
+        """
+        salmon quant
+        -i {input.index}
+        --libType ISF
+        -1 {input.fq1}
+        -2 {input.fq2}
+        -o {params.outdir}
+        --threads {resources.threads}
+        &> {log}
+        """
 
 
 rule salmon_tximport:
