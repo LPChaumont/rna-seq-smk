@@ -40,7 +40,7 @@ rule salmon_quant:
         "../envs/salmon.yaml"
     shell:
         """
-        salmon quant
+        salmon --no-version-check quant
         -i {input.index}
         --libType ISF
         -1 {input.fq1}
