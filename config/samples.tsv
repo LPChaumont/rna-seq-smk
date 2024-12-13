@@ -1,10 +1,10 @@
-sample	condition	fastq_1	fastq_2
-D0_P69	D0	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P69_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P69_R2.fastq.gz
-D0_P71	D0	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P71_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P71_R2.fastq.gz
-D0_P74	D0	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P74_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P74_R2.fastq.gz
-D2_P69	D2	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P69_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P69_R2.fastq.gz
-D2_P71	D2	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P71_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P71_R2.fastq.gz
-D2_P74	D2	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P74_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P74_R2.fastq.gz
-D4_P69	D4	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P69_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P69_R2.fastq.gz
-D4_P71	D4	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P71_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P71_R2.fastq.gz
-D4_P74	D4	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P74_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P74_R2.fastq.gz
+sample	condition	fastq_1	fastq_2	allo
+D0_P69	D0	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P69_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P69_R2.fastq.gz	allo
+D0_P71	D0	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P71_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P71_R2.fastq.gz	allo
+D0_P74	D0	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P74_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D0_P74_R2.fastq.gz	allo
+D2_P69	D2	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P69_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P69_R2.fastq.gz	allo
+D2_P71	D2	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P71_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P71_R2.fastq.gz	allo
+D2_P74	D2	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P74_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D2_P74_R2.fastq.gz	allo
+D4_P69	D4	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P69_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P69_R2.fastq.gz	allo
+D4_P71	D4	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P71_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P71_R2.fastq.gz	allo
+D4_P74	D4	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P74_R1.fastq.gz	/home/lchaumo/projects/def-kchoquet/lchaumo/iNGN_fastq_TGIRT-Seq/iNGN_D4_P74_R2.fastq.gz	allo

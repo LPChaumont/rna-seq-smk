@@ -72,6 +72,7 @@ rule rmats_prep:
         read_length=config["read_length"],
         post_tmp_dir="results/rmats/post/tmp",
         prefix="{sample}_",
+        lib_type=config["rmats"]["lib_type"],
     log:
         "logs/rmats/prep/{sample}.log",
     conda:
@@ -85,7 +86,7 @@ rule rmats_prep:
         --readLength {params.read_length}
         --b1 {input.config}
         -t paired
-        --libType fr-secondstrand
+        --libType {params.lib_type}
         --nthread {resources.threads}
         --task prep
         --variable-read-length

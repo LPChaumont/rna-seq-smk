@@ -1,0 +1,118 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+description: snakemake config file
+type: object
+
+properties:
+  samples:
+    type: string
+  contrasts:
+    type: string
+
+  ref:
+    type: object
+    properties:
+      gtf:
+        type: string
+      dna_fasta:
+        type: string
+      cnda_fasta:
+        type: string
+      ncrna_fasta:
+        type: string
+      required:
+        - gtf
+        - dna_fasta
+        - cdna_fasta
+        - ncrna_fasta
+
+  salmon:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      lib_type:
+        type: string
+        default: A
+        enum:
+          - A
+          - IU
+          - ISF
+          - ISR
+          - MSF
+          - MSR
+          - OSR
+          - OSF
+    required:
+      - activate
+
+  coco:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      strand:
+        type: integer
+        default: 0
+        enum:
+          - 0
+          - 1
+          - 2
+      min_gene_expr:
+        type: integer
+        default: 1
+      min_condition_expr:
+        type: integer
+        default: 1
+    required:
+      - activate
+
+  rmats:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      lib_type:
+        type: string
+        default: fr-unstranded
+        enum:
+          - fr-unstranded
+          - fr-firststrand
+          - fr-secondstrand
+      paired_stats:
+        type: boolean
+        default: false
+    required:
+      - activate
+
+  deseq2:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      full_model:
+        type: string
+      reduced_model:
+        type: string
+      control_genes:
+        type: string
+      tpm:
+        type: boolean
+      min_gene_expr:
+        type: integer
+      min_samps_gene_expr:
+        type: integer
+      padj:
+        type: number
+      lfc:
+        type: number
+    required:
+      - activate
+
+required:
+  - samples
+  - contrasts
+  - ref
+  - salmon
+  - coco
+  - rmats
+  - deseq2

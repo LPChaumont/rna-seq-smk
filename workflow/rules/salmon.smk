@@ -36,13 +36,14 @@ rule salmon_quant:
         "logs/salmon/quant/{sample}.log",
     params:
         outdir=lambda w, output: os.path.dirname(output[0]),
+        lib_type=config["salmon"]["lib_type"],
     conda:
         "../envs/salmon.yaml"
     shell:
         """
         salmon --no-version-check quant
         -i {input.index}
-        --libType ISF
+        --libType {params.lib_type}
         -1 {input.fq1}
         -2 {input.fq2}
         -o {params.outdir}

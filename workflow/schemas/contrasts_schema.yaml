@@ -1,0 +1,19 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+description: an entry in the contrast sheet
+
+properties:
+  contrast:
+    type: string
+    description: contrast name
+  reference_level:
+    type: string
+    description: base condition
+  tested_level:
+    type: string
+    description: tested condition
+
+required:
+  - contrast
+  - reference_level
+  - tested_level
+

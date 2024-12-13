@@ -60,6 +60,8 @@ rule coco_cc:
         bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
     output:
         quant="results/coco_cc/{sample}.tsv",
+    params:
+        strand=config["coco"]["strand"],
     log:
         "logs/coco/coco_cc/{sample}.log",
     conda:
@@ -69,7 +71,7 @@ rule coco_cc:
         python {input.coco} cc
         --countType both
         --thread {resources.threads}
-        --strand 1
+        --strand {params.strand}
         --paired
         {input.coco_gtf}
         {input.bam}
@@ -102,6 +104,9 @@ rule coco_filter_tpm:
         filtered="results/coco_cc/filtered_coco_tpm.tsv",
     log:
         "logs/coco/filter_coco_quant.log",
+    params:
+        min_gene_expr=config["coco"]["min_gene_expr"],
+        min_condition_expr=config["coco"]["min_condition_expr"],
     conda:
         "../envs/coco.yaml"
     shell:
@@ -109,8 +114,8 @@ rule coco_filter_tpm:
         python workflow/scripts/filter_gene_expression.py
         --input {input.tpm}
         --samples {input.samples}
-        --min_gene_expr 1
-        --min_condition_expr 1
+        --min_gene_expr {params.min_gene_expr}
+        --min_condition_expr {params.min_condition_expr}
         --save
         &> {log}
         """

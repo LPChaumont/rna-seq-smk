@@ -1,15 +1,41 @@
 import pandas as pd
+import os
+from snakemake.utils import validate
+
+
+def remove_empty_values(dictionary: dict):
+    """
+    Recursively removes key-value pairs from dict for which the value is None
+    Works for an arbitrarily deeply nested dict.
+    See: https://github.com/snakemake/snakemake/issues/1701#issuecomment-1150741131
+    """
+    new_dictionary = dict()
+    for key, value in dictionary.items():
+        if isinstance(value, dict):
+            new_dictionary[key] = remove_empty_values(value)
+        elif value is None:
+            pass
+        else:
+            new_dictionary[key] = value
+
+    return new_dictionary
+
+
+config = remove_empty_values(config)
+validate(config, schema="../schemas/config_schema.yaml")
+
 
 samples = pd.read_table(config["samples"], header=0, dtype=str, comment="#").set_index(
     "sample", drop=False
 )
-samples.index.names = ["sample_id"]
+validate(samples, "../schemas/samples_schema.yaml")
 SAMPLES = samples["sample"]
 
 
 contrasts = pd.read_table(
     config["contrasts"], header=0, dtype=str, comment="#"
 ).set_index("contrast", drop=False)
+validate(contrasts, "../schemas/contrasts_schema.yaml")
 CONTRASTS = contrasts["contrast"]
 
 

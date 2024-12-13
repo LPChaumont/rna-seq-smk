@@ -13,13 +13,18 @@ ref:
   ncrna_fasta: https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/ncrna/Homo_sapiens.GRCh38.ncrna.fa.gz
 
 salmon:
-  activate: false
+  activate: true
+  lib_type: ISF
 
 coco:
   activate: true
+  strand: 1
+  min_gene_expr: 1
+  min_condition_expr: 1
 
 rmats:
   activate: true
+  lib_type: fr-secondstrand 
   # Use the paired stats model (PAIRADISE)
   paired_stats: false
 
@@ -31,7 +36,7 @@ deseq2:
   # Set to `false` or leave empty if not used.
   reduced_model: ~1
   # Optional: Path to a file with one gene ID per line for size factor estimation. Set to `false` if not used.
-  control_genes: false
+  control_genes: ""
   # Use TPM for filtering gene expression. Set to `false` to use raw counts.
   tpm: true
   # Minimum gene expression level.

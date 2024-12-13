@@ -1,0 +1,22 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+description: an entry in the sample sheet
+
+properties:
+  sample:
+    type: string
+    description: sample name
+  condition:
+    type: string
+    description: sample condition
+  fastq_1:
+    type: string
+    description: absolute path of the fastq 1
+  fastq_2:
+    type: string
+    description: absolute path of the fastq 2
+
+required:
+  - sample
+  - condition
+  - fastq_1
+  - fastq_2
