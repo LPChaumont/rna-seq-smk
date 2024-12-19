@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - r-base
+  - bioconductor-tximport
+  - r-readr
+  - r-jsonlite
+  - bioconductor-genomicfeatures

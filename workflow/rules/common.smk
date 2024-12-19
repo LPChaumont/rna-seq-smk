@@ -136,6 +136,10 @@ def all_input(wildcards):
             sample=SAMPLES,
         )
     )
+    # rseqc
+    wanted_input.extend(
+        expand("results/rseqc/infer_experiment/{sample}.txt"), sample=SAMPLES
+    )
     # Samtools
     wanted_input.extend(
         expand("results/sam_stats/{sample}.txt", sample=SAMPLES)

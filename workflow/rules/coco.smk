@@ -14,10 +14,7 @@ rule install_coco:
     conda:
         "../envs/coco.yaml"
     shell:
-        """
-        cd resources/
-        && git clone {params.link} &> {log}
-        """
+        "cd resources && git clone {params.link} &> {log}"
 
 
 rule install_pairedBamToBed12:
@@ -30,17 +27,13 @@ rule install_pairedBamToBed12:
     conda:
         "../envs/coco.yaml"
     shell:
-        """
-        cd resources/
-        && git clone {params.link} &> {log}
-        && cd pairedBamToBed12/
-        && make &>> {log}
-        """
+        "cd resources/ && git clone {params.link} &> {log}"
+        " && cd pairedBamToBed12/ && make &>> {log}"
 
 
 rule coco_ca:
     input:
-        coco="resources/coco/bin/coco.py",
+        script="resources/coco/bin/coco.py",
         gtf=get_ref_file(config["ref"]["gtf"]),
     output:
         coco_gtf="results/coco_ca/correct_annotation.gtf",
@@ -49,13 +42,12 @@ rule coco_ca:
     conda:
         "../envs/coco.yaml"
     shell:
-        "python {input.coco} ca {input.gtf} -o {output.coco_gtf}"
-        " &> {log}"
+        "python {input.script} ca {input.gtf} -o {output.coco_gtf} &> {log}"
 
 
 rule coco_cc:
     input:
-        coco="resources/coco/bin/coco.py",
+        script="resources/coco/bin/coco.py",
         coco_gtf="results/coco_ca/correct_annotation.gtf",
         bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
     output:
@@ -67,17 +59,15 @@ rule coco_cc:
     conda:
         "../envs/coco.yaml"
     shell:
-        """
-        python {input.coco} cc
-        --countType both
-        --thread {resources.threads}
-        --strand {params.strand}
-        --paired
-        {input.coco_gtf}
-        {input.bam}
-        {output.quant}
-        &> {log}
-        """
+        "python {input.script} cc"
+        " --countType both"
+        " --thread {resources.threads}"
+        " --strand {params.strand}"
+        " --paired"
+        " {input.coco_gtf}"
+        " {input.bam}"
+        " {output.quant}"
+        " &> {log}"
 
 
 rule merge_coco_quant:
@@ -110,20 +100,18 @@ rule coco_filter_tpm:
     conda:
         "../envs/coco.yaml"
     shell:
-        """
-        python workflow/scripts/filter_gene_expression.py
-        --input {input.tpm}
-        --samples {input.samples}
-        --min_gene_expr {params.min_gene_expr}
-        --min_condition_expr {params.min_condition_expr}
-        --save
-        &> {log}
-        """
+        "python workflow/scripts/filter_gene_expression.py"
+        " --input {input.tpm}"
+        " --samples {input.samples}"
+        " --min_gene_expr {params.min_gene_expr}"
+        " --min_condition_expr {params.min_condition_expr}"
+        " --save"
+        " &> {log}"
 
 
 rule coco_cb:
     input:
-        coco="resources/coco/bin/coco.py",
+        script="resources/coco/bin/coco.py",
         bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
         chrNameLength="results/star_index/chrNameLength.txt",
     output:
@@ -135,15 +123,13 @@ rule coco_cb:
     conda:
         "../envs/coco.yaml"
     shell:
-        """
-        export PATH=$PATH:$PWD/{params.pb2b}
-        && python {input.coco} cb
-        --thread {resources.threads}
-        {input.bam}
-        {output.unsorted_bedgraph}
-        {input.chrNameLength}
-        &> {log}
-        """
+        "export PATH=$PATH:$PWD/{params.pb2b}"
+        " && python {input.script} cb"
+        " --thread {resources.threads}"
+        " {input.bam}"
+        " {output.unsorted_bedgraph}"
+        " {input.chrNameLength}"
+        " &> {log}"
 
 
 rule coco_sort_bg:
@@ -175,7 +161,9 @@ rule chromsize:
     shell:
         """
         chromsize --fasta {input.fasta} --output {output.chromsize} &> {log}
-        awk '{{print "chr"$1 "\t" $NF}}' {output.chromsize} | sed 's/\bchrM\b/chrMT/g' > {output.chromsize}.tmp
+        awk '{{print "chr"$1 "\t" $NF}}' {output.chromsize}
+        | sed 's/\bchrM\b/chrMT/g'
+        | sort -k1 > {output.chromsize}.tmp
         mv {output.chromsize}.tmp {output.chromsize}
         """
 

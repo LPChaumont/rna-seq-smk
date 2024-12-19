@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - rseqc=5.0.4
+  - gxf2bed=0.2.4

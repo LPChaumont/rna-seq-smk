@@ -20,16 +20,14 @@ rule deseq2:
     conda:
         "../envs/deseq2.yaml"
     shell:
-        """
-        python workflow/scripts/deseq2.py
-        --outdir {params.outdir}
-        --counts {input.raw_counts}
-        --samples {input.samples}
-        --contrasts {input.contrasts}
-        --full-model {params.full_model}
-        --padj {params.padj}"
-        --lfc {params.lfc}
-        --min-gene-expr {params.min_gene_expr}
-        --min-samps-gene-expr {params.min_samps_gene_expr}
-        {params.extra}
-        """
+        "python workflow/scripts/deseq2.py"
+        " --outdir {params.outdir}"
+        " --counts {input.raw_counts}"
+        " --samples {input.samples}"
+        " --contrasts {input.contrasts}"
+        " --full-model {params.full_model}"
+        " --padj {params.padj}"
+        " --lfc {params.lfc}"
+        " --min-gene-expr {params.min_gene_expr}"
+        " --min-samps-gene-expr {params.min_samps_gene_expr}"
+        " {params.extra}"

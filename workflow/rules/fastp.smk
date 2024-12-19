@@ -13,13 +13,11 @@ rule fastp:
     conda:
         "../envs/fastp.yaml"
     shell:
-        """
-        fastp
-        -i {input.fq1} -I {input.fq2}
-        -o {output.fq1} -O {output.fq2}
-        --unpaired1 {output.ufq1} --unpaired2 {output.ufq2}
-        --json {output.json}
-        --html {output.html}
-        --thread {resources.threads}
-        2> {log}
-        """
+        "fastp"
+        " -i {input.fq1} -I {input.fq2}"
+        " -o {output.fq1} -O {output.fq2}"
+        " --unpaired1 {output.ufq1} --unpaired2 {output.ufq2}"
+        " --json {output.json}"
+        " --html {output.html}"
+        " --thread {resources.threads}"
+        " 2> {log}"

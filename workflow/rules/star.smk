@@ -13,17 +13,15 @@ rule star_index:
     conda:
         "../envs/star.yaml"
     shell:
-        """
-        STAR
-        --runMode genomeGenerate
-        --runThreadN {resources.threads}
-        --genomeDir {params.index_dir}
-        --genomeFastaFiles {input.genome}
-        --sjdbGTFfile {input.gtf}
-        --sjdbOverhang {params.read_length}
-        --outTmpDir {params.tmp}
-        &> {log}
-        """
+        "STAR"
+        " --runMode genomeGenerate"
+        " --runThreadN {resources.threads}"
+        " --genomeDir {params.index_dir}"
+        " --genomeFastaFiles {input.genome}"
+        " --sjdbGTFfile {input.gtf}"
+        " --sjdbOverhang {params.read_length}"
+        " --outTmpDir {params.tmp}"
+        " &> {log}"
 
 
 rule star_align:
@@ -41,23 +39,21 @@ rule star_align:
     conda:
         "../envs/star.yaml"
     shell:
-        """
-        STAR --runMode alignReads
-        --genomeDir {params.index_dir}
-        --readFilesIn {input.fq1} {input.fq2}
-        --runThreadN {resources.threads}
-        --outFileNamePrefix {params.prefix}
-        --readFilesCommand zcat
-        --outReadsUnmapped Fastx
-        --outFilterType BySJout
-        --outStd Log
-        --outSAMunmapped None
-        --outSAMtype BAM SortedByCoordinate
-        --outFilterScoreMinOverLread 0.3
-        --outFilterMatchNminOverLread 0.3
-        --outFilterMultimapNmax 100
-        --winAnchorMultimapNmax 100
-        --alignEndsProtrude 5 ConcordantPair"
-        --limitBAMsortRAM 6802950316
-        &> {log}
-        """
+        "STAR --runMode alignReads"
+        " --genomeDir {params.index_dir}"
+        " --readFilesIn {input.fq1} {input.fq2}"
+        " --runThreadN {resources.threads}"
+        " --outFileNamePrefix {params.prefix}"
+        " --readFilesCommand zcat"
+        " --outReadsUnmapped Fastx"
+        " --outFilterType BySJout"
+        " --outStd Log"
+        " --outSAMunmapped None"
+        " --outSAMtype BAM SortedByCoordinate"
+        " --outFilterScoreMinOverLread 0.3"
+        " --outFilterMatchNminOverLread 0.3"
+        " --outFilterMultimapNmax 100"
+        " --winAnchorMultimapNmax 100"
+        " --alignEndsProtrude 5 ConcordantPair"
+        " --limitBAMsortRAM 6802950316"
+        " &> {log}"

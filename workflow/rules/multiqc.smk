@@ -8,10 +8,8 @@ rule multiqc:
     conda:
         "../envs/multiqc.yaml"
     shell:
-        """
-        multiqc results
-        --outdir {output}
-        --force
-        --verbose
-        &> {log}
-        """
+        "multiqc results"
+        " --outdir {output}"
+        " --force"
+        " --verbose"
+        " &> {log}"

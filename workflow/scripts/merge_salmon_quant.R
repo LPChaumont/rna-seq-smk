@@ -2,39 +2,57 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log)
 sink(log, type = "message")
 
-library(tximport)
-library(jsonlite)
-library(rtracklayer)
-
-# Get salmon quant files
-quants_dir <- snakemake@params[["quantdir"]]
-quant_files <- list.files(quants_dir, pattern = "quant.sf$", recursive = TRUE, full.names = TRUE)
-sample_names <- basename(dirname(quant_files))
-names(quant_files) <- sample_names
-
-# Transcript id mapping to gene id
-gtf <- rtracklayer::import(snakemake@input[["gtf"]])
-tx2gene <- mcols(gtf[gtf$type == "transcript"][, c("transcript_id", "gene_id")])
-
-# Make tx2gene with GenomicFeatures
-# library(GenomicFeatures)
-# txdb <- makeTxDbFromGFF(gtf_path, format = "gtf")
-# k <- keys(txdb, keytype = "GENEID")
-# tx2gene <- select(txdb, keys = k, keytype = "GENEID", columns = "TXNAME")
-
-# tximport
-transcript <- tximport(quant_files, type = "salmon", tx2gene = tx2gene, ignoreTxVersion = TRUE)
-gene <- tximport(quant_files, type = "salmon", tx2gene = tx2gene, ignoreTxVersion = TRUE, txOut = TRUE)
+library("tximport")
+library("readr")
+library("jsonlite")
 
 
-write_tsv <- function(data, filename) {
-  write.table(data.frame(gene_id = row.names(data), data),
-    filename,
-    sep = "\t", row.names = FALSE, quote = FALSE
+write_tsv <- function(data, file) {
+  write.table(
+    data.frame(gene_id = row.names(data), data),
+    file,
+    sep = "\t",
+    row.names = FALSE,
+    quote = FALSE
   )
 }
 
-write_tsv(transcript$counts, snakemake@output[["salmon_transcript_counts.tsv"]])
-write_tsv(transcript$abundance, snakemake@output[["salmon_transcript_tpm.tsv"]])
-write_tsv(gene$counts, snakemake@output[["salmon_gene_counts.tsv"]])
-write_tsv(gene$abundance, snakemake@output[["salmon_gene_tpm.tsv"]])
+
+quant_files <- list.files(
+  snakemake@params[["quantdir"]],
+  pattern = "quant.sf$",
+  recursive = TRUE,
+  full.names = TRUE
+)
+sample_names <- basename(dirname(quant_files))
+names(quant_files) <- sample_names
+
+tx2gene <- read.table(
+  snakemake@input[["tx2gene"]],
+  header= TRUE,
+  sep="\t",
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
+
+txi_tx <- tximport(
+  quant_files,
+  type = "salmon",
+  tx2gene = tx2gene,
+  ignoreTxVersion = TRUE
+  txOut = TRUE
+)
+saveRDS(txi_tx, file=snakemake@output[["tx_rds"]])
+
+txi_gene <- tximport(
+  quant_files,
+  type = "salmon",
+  tx2gene = tx2gene,
+  txOut = FALSE
+)
+saveRDS(txi_gene, file=snakemake@output[["gene_rds"]])
+
+write_tsv(txi_tx$counts, snakemake@output[["tx_count"]])
+write_tsv(txi_gene$counts, snakemake@output[["gene_count"]])
+write_tsv(txi_tx$abundance, snakemake@output[["tx_tpm"]])
+write_tsv(txi_gene$abundance, snakemake@output[["gene_tpm"]])
