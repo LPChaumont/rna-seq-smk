@@ -35,8 +35,8 @@ set-resources:
         time: 0-1:00
 
     salmon_quant:
-        threads: 4
-        mem_gb: 8
+        threads: 8
+        mem_gb: 24
         time: 0-1:00
 
     star_index:
