@@ -72,10 +72,9 @@ rule coco_cc:
 
 rule merge_coco_quant:
     input:
-        gtf=get_ref_file(config["ref"]["gtf"]),
         quants=expand("results/coco_cc/{sample}.tsv", sample=SAMPLES),
     output:
-        counts="results/coco_cc/coco_counts.tsv",
+        counts="results/coco_cc/coco_count.tsv",
         cpm="results/coco_cc/coco_cpm.tsv",
         tpm="results/coco_cc/coco_tpm.tsv",
     log:
