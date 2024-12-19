@@ -5,6 +5,8 @@ rule gtf2bed:
         "resources/gtf2bed.bed",
     log:
         "logs/gtf2bed.log",
+    conda:
+        "../envs/rseqc.yaml"
     shell:
         "gxf2bed --input {input} --output {output} &> {log}"
 
