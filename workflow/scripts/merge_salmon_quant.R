@@ -9,29 +9,30 @@ library("jsonlite")
 
 write_tsv <- function(data, file) {
   write.table(
-    data.frame(gene_id = row.names(data), data),
-    file,
+    data, file,
     sep = "\t",
     row.names = FALSE,
     quote = FALSE
   )
 }
 
+add_gene_col <- function(df) {
+  return(data.frame(gene_id = rownames(df), df))
+}
 
-quant_files <- list.files(
-  snakemake@params[["quantdir"]],
-  pattern = "quant.sf$",
-  recursive = TRUE,
-  full.names = TRUE
-)
-sample_names <- basename(dirname(quant_files))
+add_tx_col <- function(df) {
+  return(data.frame(tx_id = gsub("\\.[0-9]*$", "", rownames(df)), df))
+}
+
+
+quant_files <- snakemake@input[["quants"]]
+sample_names <- sapply(quant_files, \(x) basename(dirname(x)))
 names(quant_files) <- sample_names
 
 tx2gene <- read.table(
   snakemake@input[["tx2gene"]],
   header= TRUE,
   sep="\t",
-  stringsAsFactors = FALSE,
   check.names = FALSE
 )
 
@@ -39,7 +40,7 @@ txi_tx <- tximport(
   quant_files,
   type = "salmon",
   tx2gene = tx2gene,
-  ignoreTxVersion = TRUE
+  ignoreTxVersion = TRUE,
   txOut = TRUE
 )
 saveRDS(txi_tx, file=snakemake@output[["tx_rds"]])
@@ -48,11 +49,12 @@ txi_gene <- tximport(
   quant_files,
   type = "salmon",
   tx2gene = tx2gene,
+  ignoreTxVersion = TRUE,
   txOut = FALSE
 )
 saveRDS(txi_gene, file=snakemake@output[["gene_rds"]])
 
-write_tsv(txi_tx$counts, snakemake@output[["tx_count"]])
-write_tsv(txi_gene$counts, snakemake@output[["gene_count"]])
-write_tsv(txi_tx$abundance, snakemake@output[["tx_tpm"]])
-write_tsv(txi_gene$abundance, snakemake@output[["gene_tpm"]])
+write_tsv(add_tx_col(txi_tx$counts), snakemake@output[["tx_counts"]])
+write_tsv(add_gene_col(txi_gene$counts), snakemake@output[["gene_counts"]])
+write_tsv(add_tx_col(txi_tx$abundance), snakemake@output[["tx_tpm"]])
+write_tsv(add_gene_col(txi_gene$abundance), snakemake@output[["gene_tpm"]])

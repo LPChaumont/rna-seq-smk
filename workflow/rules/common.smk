@@ -125,33 +125,34 @@ def get_multiqc_input(wildcards):
 
 
 def all_input(wildcards):
-    wanted_input = []
+    all_input = []
 
     # fastp
-    wanted_input.extend(expand("results/fastp/{sample}_fastp.html", sample=SAMPLES))
+    all_input.extend(expand("results/fastp/{sample}_fastp.html", sample=SAMPLES))
     # STAR
-    wanted_input.extend(
+    all_input.extend(
         expand(
             "results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
             sample=SAMPLES,
         )
     )
     # rseqc
-    wanted_input.extend(
+    all_input.extend(
         expand("results/rseqc/infer_experiment/{sample}.txt", sample=SAMPLES)
+        + expand("results/rseqc/bam_stats/{sample}.txt", sample=SAMPLES)
     )
     # Samtools
-    wanted_input.extend(
+    all_input.extend(
         expand("results/sam_stats/{sample}.txt", sample=SAMPLES)
         + expand("results/sam_flagstat/{sample}.tsv", sample=SAMPLES)
         + expand("results/sam_idxstats/{sample}.tsv", sample=SAMPLES)
     )
     # salmon
     if config["salmon"]["activate"]:
-        wanted_input.extend(["results/salmon_tximport/salmon_gene_tpm.tsv"])
+        all_input.extend(["results/salmon/tximport/salmon_gene_tpm.tsv"])
     # CoCo
     if config["coco"]["activate"]:
-        wanted_input.extend(
+        all_input.extend(
             expand(
                 "results/coco_cc/coco_{counttype}.tsv",
                 counttype=["counts", "cpm", "tpm"],
@@ -161,7 +162,7 @@ def all_input(wildcards):
         )
     # rMATS
     if config["rmats"]["activate"]:
-        wanted_input.extend(
+        all_input.extend(
             expand(
                 "results/rmats/stat/{contrast}/{filter}_{event}.MATS.{junction}.txt",
                 contrast=CONTRASTS,
@@ -172,23 +173,23 @@ def all_input(wildcards):
         )
     # DESeq2
     if config["deseq2"]["activate"]:
-        wanted_input.extend(["results/deseq2/heatmap_samples.png"])
+        all_input.extend(["results/deseq2/heatmap_samples.png"])
     # MultiQC
-    wanted_input.extend(["results/multiqc"])
+    all_input.extend(["results/multiqc"])
 
-    return wanted_input
+    return all_input
 
 
 def download_input(wildcards):
-    wanted_input = []
+    all_input = []
 
     # ref
-    wanted_input.extend(
+    all_input.extend(
         [get_ref_file(ref) for ref in config["ref"].values()] + [get_transcriptome()]
     )
     # CoCo
-    wanted_input.extend(["resources/coco", "resources/pairedBamToBed12/bin"])
+    all_input.extend(["resources/coco", "resources/pairedBamToBed12/bin"])
     # rMATS
-    wanted_input.extend(["resources/install_r_deps.R", "resources/PAIRADISE"])
+    all_input.extend(["resources/install_r_deps.R", "resources/PAIRADISE"])
 
-    return wanted_input
+    return all_input

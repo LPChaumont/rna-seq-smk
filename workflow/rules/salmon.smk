@@ -76,18 +76,16 @@ rule tx2gene:
 rule salmon_tximport:
     input:
         tx2gene="resources/tx2gene.tsv",
-        quant=expand("results/salmon/quant/{sample}/quant.sf", sample=SAMPLES),
+        quants=expand("results/salmon/quant/{sample}/quant.sf", sample=SAMPLES),
     output:
-        tx_rds="results/salmon_tximport/salmon_tx.rds.",
-        gene_rds="results/salmon_tximport/salmon_gene.rds.",
-        tx_tpm="results/salmon_tximport/salmon_tx_tpm.tsv",
-        gene_tpm="results/salmon_tximport/salmon_gene_tpm.tsv",
-        tx_count="results/salmon_tximport/salmon_tx_counts.tsv",
-        gene_count="results/salmon_tximport/salmon_gene_counts.tsv",
+        tx_rds="results/salmon/tximport/salmon_tx.rds.",
+        gene_rds="results/salmon/tximport/salmon_gene.rds.",
+        tx_tpm="results/salmon/tximport/salmon_tx_tpm.tsv",
+        gene_tpm="results/salmon/tximport/salmon_gene_tpm.tsv",
+        tx_counts="results/salmon/tximport/salmon_tx_counts.tsv",
+        gene_counts="results/salmon/tximport/salmon_gene_counts.tsv",
     log:
-        "logs/salmon/salmon/tximport.log",
-    params:
-        quantdir=lambda w, output: os.path.dirname(output[0]),
+        "logs/salmon/tximport.log",
     conda:
         "../envs/tximport.yaml"
     script:
