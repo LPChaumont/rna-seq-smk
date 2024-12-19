@@ -138,7 +138,7 @@ def all_input(wildcards):
     )
     # rseqc
     wanted_input.extend(
-        expand("results/rseqc/infer_experiment/{sample}.txt"), sample=SAMPLES
+        expand("results/rseqc/infer_experiment/{sample}.txt", sample=SAMPLES)
     )
     # Samtools
     wanted_input.extend(
@@ -148,11 +148,7 @@ def all_input(wildcards):
     )
     # salmon
     if config["salmon"]["activate"]:
-        wanted_input.extend(
-            [
-                "results/salmon_quant/salmon_tpm_gene.tsv",
-            ]
-        )
+        wanted_input.extend(["results/salmon_tximport/salmon_gene_tpm.tsv"])
     # CoCo
     if config["coco"]["activate"]:
         wanted_input.extend(
