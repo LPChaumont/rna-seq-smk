@@ -1,136 +1,124 @@
+#!/usr/bin/env python3
+
+import argparse
 import math
 import os
 import sys
-
 from rmats_class_exon import exon_SE, exon_RI, exon_AXSS, exon_MXE
 
+# modified from https://github.com/Xinglab/rmats-turbo-tutorial/blob/main/scripts/rmats_filtering.py
 
 def get_exon_class(fn):
     if "SE" in fn:
-        exon = exon_SE
+        return exon_SE
     elif "RI" in fn:
-        exon = exon_RI
+        return exon_RI
     elif "A3SS" in fn:
-        exon = exon_AXSS
+        return exon_AXSS
     elif "A5SS" in fn:
-        exon = exon_AXSS
+        return exon_AXSS
     elif "MXE" in fn:
-        exon = exon_MXE
+        return exon_MXE
     else:
-        print("Wrong Type Information in Input File Name. Please Modify It.")
+        print("Invalid alternative event type in the input file name. Please modify the file name.")
         sys.exit()
 
-    return exon
 
-
-def read_rMATS(
-    fn, readCov, minPSI, maxPSI, sigFDR, sigDeltaPSI, bgFDR, bgWithinGroupDeltaPSI
+def filter_rMATS(
+    fn, read_cov, min_psi, max_psi, sig_fdr, bg_fdr, sig_delta_psi, bg_within_group_delta_psi
 ):
 
     exon = get_exon_class(fn)
 
-    filtered_event_list = []
-    up_event_list = []
-    dn_event_list = []
-    bg_event_list = []
+    filtered_events = []
+    upregulated_events = []
+    downnregulated_events = []
+    background_events = []
+
     with open(fn, "r") as f:
         header = f.readline()
         for line in f:
-            x = exon(line)
-
+            event = exon(line)
+            # filter events by read coverage and PSI
             if (
-                (x.averageIJC_SAMPLE_1 >= readCov or x.averageSJC_SAMPLE_1 >= readCov)
-                and (
-                    x.averageIJC_SAMPLE_2 >= readCov or x.averageSJC_SAMPLE_2 >= readCov
-                )
-                and min(x.averagePsiSample1, x.averagePsiSample2) <= maxPSI
-                and max(x.averagePsiSample1, x.averagePsiSample2) >= minPSI
+                (event.averageIJC_SAMPLE_1 >= read_cov or event.averageSJC_SAMPLE_1 >= read_cov)
+                and (event.averageIJC_SAMPLE_2 >= read_cov or event.averageSJC_SAMPLE_2 >= read_cov)
+                and min(event.averagePsiSample1, event.averagePsiSample2) <= max_psi
+                and max(event.averagePsiSample1, event.averagePsiSample2) >= min_psi
             ):
-                filtered_event_list.append(x)
-                if x.FDR < sigFDR:
-                    if x.IncLevelDifference >= sigDeltaPSI:
-                        dn_event_list.append(x)
-                    elif x.IncLevelDifference <= -sigDeltaPSI:
-                        up_event_list.append(x)
+                filtered_events.append(event)
+                # filter events by delta PSI and FDR
+                if event.FDR < sig_fdr:
+                    if event.IncLevelDifference >= sig_delta_psi:
+                        downnregulated_events.append(event)
+                    elif event.IncLevelDifference <= -sig_delta_psi:
+                        upregulated_events.append(event)
                 elif (
-                    x.FDR >= bgFDR
-                    and max(x.IncLevel1) - min(x.IncLevel1) <= bgWithinGroupDeltaPSI
-                    and max(x.IncLevel2) - min(x.IncLevel2) <= bgWithinGroupDeltaPSI
+                    event.FDR >= bg_fdr
+                    and max(event.IncLevel1) - min(event.IncLevel1) <= bg_within_group_delta_psi
+                    and max(event.IncLevel2) - min(event.IncLevel2) <= bg_within_group_delta_psi
                 ):
-                    bg_event_list.append(x)
-            # considering cases when --b2 is not provided.
+                    background_events.append(event)
+            # handle cases where --b2 is not provided.
             elif (
-                (x.averageIJC_SAMPLE_1 >= readCov or x.averageSJC_SAMPLE_1 >= readCov)
-                and math.isnan(x.averageIJC_SAMPLE_2)
-                and min(x.averagePsiSample1, x.averagePsiSample2) <= maxPSI
-                and max(x.averagePsiSample1, x.averagePsiSample2) >= minPSI
+                (event.averageIJC_SAMPLE_1 >= read_cov or event.averageSJC_SAMPLE_1 >= read_cov)
+                and math.isnan(event.averageIJC_SAMPLE_2)
+                and min(event.averagePsiSample1, event.averagePsiSample2) <= max_psi
+                and max(event.averagePsiSample1, event.averagePsiSample2) >= min_psi
             ):
-                filtered_event_list.append(x)
+                filtered_events.append(event)
 
     event_dict = {
-        "upregulated": up_event_list,
-        "downregulated": dn_event_list,
-        "background": bg_event_list,
-        "filtered": filtered_event_list,
+        "upregulated": upregulated_events,
+        "downregulated": downnregulated_events,
+        "filtered": filtered_events,
     }
 
     return header, event_dict
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Filter rMATS output")
+    
+    parser.add_argument("--input", type=str, required=True, help="Path to the rMATS output file")
+    parser.add_argument("--outdir", type=str, default=".", help="Output directory (default: %(default)s)")
+    parser.add_argument("--read_cov", type=int, default=10, help="Minimum read coverage (default: %(default)s)")
+    parser.add_argument("--min_psi", type=float, default=0.05, help="Minimum average PSI (default: %(default)s)")
+    parser.add_argument("--max_psi", type=float, default=0.95, help="Maximum average PSI (default: %(default)s)")
+    parser.add_argument("--sig_fdr", type=float, default=0.05, help="Threshold for significant FDR (default: %(default)s)")
+    parser.add_argument("--bg_fdr", type=float, default=0.5, help="Threshold for background FDR (default: %(default)s)")
+    parser.add_argument("--sig_delta_psi", type=float, default=0.1, help="Threshold for significant delta PSI (default: %(default)s)")
+    parser.add_argument("--bg_within_group_delta_psi", type=float, default=0.2, help="Threshold for background within-group delta PSI (default: %(default)s)")
+    
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    fn_rmats = str(sys.argv[1])
-    fn_up, fn_dn, fn_bg, fn_filtered = [
-        i + os.path.basename(fn_rmats) for i in ["up_", "dn_", "bg_", "filtered_"]
-    ]
+    args = parse_args()
+    input_path = args.input
+    input_fn = os.path.basename(input_path)
 
-    #### FILTERING PARAMETERS ####
-    # defalt filtering parameter
-    readCov = 10
-    minPSI = 0.05
-    maxPSI = 0.95
-    sigFDR = 0.05
-    sigDeltaPSI = 0.1
-    bgFDR = 0.5
-    bgWithinGroupDeltaPSI = 0.2
-    # filtering parameters from input
-    if len(sys.argv) > 2:
-        readCov, minPSI, maxPSI, sigFDR, sigDeltaPSI, bgFDR, bgWithinGroupDeltaPSI = [
-            float(x) for x in sys.argv[2].split(",")
-        ]
+    output_files = {
+        "filtered": os.path.join(args.outdir, f"filtered_{input_fn}"),
+        "upregulated": os.path.join(args.outdir, f"up_{input_fn}"),
+        "downregulated": os.path.join(args.outdir, f"dn_{input_fn}"),
+        "background": os.path.join(args.outdir, f"bg_{input_fn}")
+    }
 
-    #### RUN ####
-    header, event_dict = read_rMATS(
-        fn_rmats,
-        readCov,
-        minPSI,
-        maxPSI,
-        sigFDR,
-        sigDeltaPSI,
-        bgFDR,
-        bgWithinGroupDeltaPSI,
+    header, event_dict = filter_rMATS(
+        args.input,
+        args.read_cov,
+        args.min_psi,
+        args.max_psi,
+        args.sig_fdr,
+        args.bg_fdr,
+        args.sig_delta_psi,
+        args.bg_within_group_delta_psi
     )
 
-    with open(fn_filtered, "w") as f:
-        f.write(header)
-        for event in event_dict["filtered"]:
-            f.write(str(event))
-
-    if (
-        len(event_dict["upregulated"]) > 0
-        or len(event_dict["downregulated"]) > 0
-        or len(event_dict["background"]) > 0
-    ):
-        with open(fn_up, "w") as f:
-            f.write(header)
-            for event in event_dict["upregulated"]:
-                f.write(str(event))
-
-        with open(fn_dn, "w") as f:
-            f.write(header)
-            for event in event_dict["downregulated"]:
-                f.write(str(event))
-
-        with open(fn_bg, "w") as f:
-            f.write(header)
-            for event in event_dict["background"]:
-                f.write(str(event))
+    for category in event_dict:
+        if event_dict[category]:
+            with open(output_files[category], "w") as f:
+                f.write(header)
+                for event in event_dict[category]:
+                    f.write(str(event))

@@ -1,9 +1,9 @@
 import numpy as np
 import sys
 
+# modified from https://github.com/Xinglab/rmats-turbo-tutorial/blob/main/scripts/class_exon.py
 
 def get_exon_class(fn):
-    # *--- start get the correct exon class ----*#
     if "SE" in fn:
         exon, event_type = exon_SE, "SE"
     elif "RI" in fn:
@@ -14,12 +14,10 @@ def get_exon_class(fn):
         exon, event_type = exon_AXSS, "A5SS"
     elif "MXE" in fn:
         exon, event_type = exon_MXE, "MXE"
-    # elif 'squid' in fn:
-    #     exon = exon_RI_squid
     else:
-        print("Wrong Type Information in Input File Name. Please Motify It.")
+        print("Invalid alternative event type in the input file name. Please modify the file name.")
         sys.exit()
-    # *---- end get the correct exon class ----*#
+
     return exon, event_type
 
 

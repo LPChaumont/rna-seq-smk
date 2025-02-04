@@ -22,7 +22,7 @@ rule install_pairadise:
 
 rule rmats_config_prep:
     input:
-        bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        bam="results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
     output:
         config="results/rmats/bam_config_prep/{sample}.txt",
     log:
@@ -36,7 +36,7 @@ rule rmats_config_prep:
 rule rmats_config_post:
     input:
         bam=expand(
-            "results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+            "results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
             sample=SAMPLES,
         ),
     output:
@@ -78,6 +78,7 @@ rule rmats_prep:
         " --nthread {resources.threads}"
         " --task prep"
         " --variable-read-length"
+        " --allow-clipping"
         " &> {log}"
         " && mkdir -p {params.post_dir} {params.post_tmp_dir}"
         " && python $CONDA_PREFIX/rMATS/cp_with_prefix.py"
@@ -113,6 +114,7 @@ rule rmats_post:
         " --nthread {resources.threads}"
         " --task post"
         " --variable-read-length"
+        " --allow-clipping"
         " --statoff"
         " &> {log}"
 
@@ -157,12 +159,19 @@ rule rmats_filtering:
         filtered="results/rmats/stat/{contrast}/{filter}_{event}.MATS.{junction}.txt",
     params:
         outdir=lambda w, output: os.path.dirname(output[0]),
-        # Relative path based on the output directory
-        script="../../../../workflow/scripts/rmats_filtering.py",
+        rmats_input="results/rmats/stat/{contrast}/{event}.MATS.{junction}.txt",
     log:
         "logs/rmats/filtering/{contrast}_{filter}_{event}_{junction}.log",
     conda:
         "../envs/rmats.yaml"
     shell:
-        "cd {params.outdir} &&"
-        " python {params.script} {wildcards.event}.MATS.{wildcards.junction}.txt"
+        "python workflow/scripts/rmats_filtering.py"
+        " --input {params.rmats_input}"
+        " --outdir {params.outdir}"
+        " --read_cov 10"
+        " --min_psi 0.05"
+        " --max_psi 0.95"
+        " --sig_fdr 0.05"
+        " --bg_fdr 0.5"
+        " --sig_delta_psi 0.1"
+        " --bg_within_group_delta_psi 0.5"

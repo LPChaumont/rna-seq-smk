@@ -49,7 +49,7 @@ rule coco_cc:
     input:
         script="resources/coco/bin/coco.py",
         coco_gtf="results/coco_ca/correct_annotation.gtf",
-        bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        bam="results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
     output:
         quant="results/coco_cc/{sample}.tsv",
     params:
@@ -111,7 +111,7 @@ rule coco_filter_tpm:
 rule coco_cb:
     input:
         script="resources/coco/bin/coco.py",
-        bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        bam="results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
         chrNameLength="results/star_index/chrNameLength.txt",
     output:
         unsorted_bedgraph="results/coco_cb/{sample}_unsorted.bedgraph",

@@ -1,8 +1,8 @@
 rule sam_idx:
     input:
-        "results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        "results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
     output:
-        "results/star_align/{sample}/Aligned.sortedByCoord.out.bam.bai",
+        "results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bai",
     log:
         "logs/samtools/idx/{sample}.log",
     conda:
@@ -13,7 +13,7 @@ rule sam_idx:
 
 rule sam_stats:
     input:
-        "results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        "results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
     output:
         "results/sam_stats/{sample}.txt",
     log:
@@ -26,7 +26,7 @@ rule sam_stats:
 
 rule sam_flagstat:
     input:
-        "results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        "results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
     output:
         "results/sam_flagstat/{sample}.tsv",
     log:
@@ -39,8 +39,8 @@ rule sam_flagstat:
 
 rule sam_idxstats:
     input:
-        bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
-        bai="results/star_align/{sample}/Aligned.sortedByCoord.out.bam.bai",
+        bam="results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
+        bai="results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bai",
     output:
         "results/sam_idxstats/{sample}.tsv",
     log:

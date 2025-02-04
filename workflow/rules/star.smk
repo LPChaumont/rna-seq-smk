@@ -30,11 +30,11 @@ rule star_align:
         fq2="results/fastp/{sample}_trimmed_R2.fastq.gz",
         idx="results/star_index/chrNameLength.txt",
     output:
-        bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        bam="results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
     log:
         "logs/star/align/{sample}.log",
     params:
-        prefix=lambda w, output: os.path.dirname(output[0]),
+        prefix=lambda w, output: output.bam.replace("Aligned.sortedByCoord.out.bam", ""),
         index_dir=lambda w, input: os.path.dirname(input.idx),
     conda:
         "../envs/star.yaml"
@@ -46,14 +46,12 @@ rule star_align:
         " --outFileNamePrefix {params.prefix}"
         " --readFilesCommand zcat"
         " --outReadsUnmapped Fastx"
-        " --outFilterType BySJout"
-        " --outStd Log"
-        " --outSAMunmapped None"
+        " --twopassMode Basic"
         " --outSAMtype BAM SortedByCoordinate"
-        " --outFilterScoreMinOverLread 0.3"
-        " --outFilterMatchNminOverLread 0.3"
-        " --outFilterMultimapNmax 100"
-        " --winAnchorMultimapNmax 100"
-        " --alignEndsProtrude 5 ConcordantPair"
-        " --limitBAMsortRAM 6802950316"
+        " --outSAMattributes NH HI AS NM MD XS"
+        #" --outFilterScoreMinOverLread 0.3" 
+        #" --outFilterMatchNminOverLread 0.3" 
+        #" --outFilterMultimapNmax 100" 
+        #" --winAnchorMultimapNmax 100"
+        #" --alignEndsProtrude 5 ConcordantPair"
         " &> {log}"

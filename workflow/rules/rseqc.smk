@@ -14,7 +14,7 @@ rule gtf2bed:
 rule infer_experiment:
     input:
         bed="resources/gtf2bed.bed",
-        bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        bam="results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
     output:
         "results/rseqc/infer_experiment/{sample}.txt",
     log:
@@ -27,7 +27,7 @@ rule infer_experiment:
 
 rule bam_stats:
     input:
-        bam="results/star_align/{sample}/Aligned.sortedByCoord.out.bam",
+        bam="results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
     output:
         "results/rseqc/bam_stats/{sample}.txt",
     log:
