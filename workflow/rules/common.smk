@@ -109,7 +109,8 @@ def get_multiqc_input(wildcards):
     input = (
         expand("results/fastp/{sample}_fastp.json", sample=SAMPLES)
         + expand(
-            "results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam", sample=SAMPLES
+            "results/star_align/{sample}/{sample}_Aligned.sortedByCoord.out.bam",
+            sample=SAMPLES,
         )
         + expand("results/sam_stats/{sample}.txt", sample=SAMPLES)
         + expand("results/sam_flagstat/{sample}.tsv", sample=SAMPLES)
@@ -188,8 +189,8 @@ def download_input(wildcards):
         [get_ref_file(ref) for ref in config["ref"].values()] + [get_transcriptome()]
     )
     # CoCo
-    #all_input.extend(["resources/coco", "resources/pairedBamToBed12/bin"])
+    # all_input.extend(["resources/coco", "resources/pairedBamToBed12/bin"])
     # rMATS
-    #all_input.extend(["resources/PAIRADISE/install_r_deps.R", "resources/PAIRADISE"])
+    # all_input.extend(["resources/PAIRADISE/install_r_deps.R", "resources/PAIRADISE"])
 
     return all_input

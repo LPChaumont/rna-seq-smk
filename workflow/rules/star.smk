@@ -49,9 +49,11 @@ rule star_align:
         " --twopassMode Basic"
         " --outSAMtype BAM SortedByCoordinate"
         " --outSAMattributes NH HI AS NM MD XS"
+
+
+        " &> {log}"
         #" --outFilterScoreMinOverLread 0.3" 
         #" --outFilterMatchNminOverLread 0.3" 
         #" --outFilterMultimapNmax 100" 
         #" --winAnchorMultimapNmax 100"
         #" --alignEndsProtrude 5 ConcordantPair"
-        " &> {log}"
