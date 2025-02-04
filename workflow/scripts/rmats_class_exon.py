@@ -3,6 +3,7 @@ import sys
 
 # modified from https://github.com/Xinglab/rmats-turbo-tutorial/blob/main/scripts/class_exon.py
 
+
 def get_exon_class(fn):
     if "SE" in fn:
         exon, event_type = exon_SE, "SE"
@@ -15,7 +16,9 @@ def get_exon_class(fn):
     elif "MXE" in fn:
         exon, event_type = exon_MXE, "MXE"
     else:
-        print("Invalid alternative event type in the input file name. Please modify the file name.")
+        print(
+            "Invalid alternative event type in the input file name. Please modify the file name."
+        )
         sys.exit()
 
     return exon, event_type

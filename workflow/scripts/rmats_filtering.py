@@ -8,6 +8,7 @@ from rmats_class_exon import exon_SE, exon_RI, exon_AXSS, exon_MXE
 
 # modified from https://github.com/Xinglab/rmats-turbo-tutorial/blob/main/scripts/rmats_filtering.py
 
+
 def get_exon_class(fn):
     if "SE" in fn:
         return exon_SE
@@ -20,12 +21,21 @@ def get_exon_class(fn):
     elif "MXE" in fn:
         return exon_MXE
     else:
-        print("Invalid alternative event type in the input file name. Please modify the file name.")
+        print(
+            "Invalid alternative event type in the input file name. Please modify the file name."
+        )
         sys.exit()
 
 
 def filter_rMATS(
-    fn, read_cov, min_psi, max_psi, sig_fdr, bg_fdr, sig_delta_psi, bg_within_group_delta_psi
+    fn,
+    read_cov,
+    min_psi,
+    max_psi,
+    sig_fdr,
+    bg_fdr,
+    sig_delta_psi,
+    bg_within_group_delta_psi,
 ):
 
     exon = get_exon_class(fn)
@@ -41,8 +51,14 @@ def filter_rMATS(
             event = exon(line)
             # filter events by read coverage and PSI
             if (
-                (event.averageIJC_SAMPLE_1 >= read_cov or event.averageSJC_SAMPLE_1 >= read_cov)
-                and (event.averageIJC_SAMPLE_2 >= read_cov or event.averageSJC_SAMPLE_2 >= read_cov)
+                (
+                    event.averageIJC_SAMPLE_1 >= read_cov
+                    or event.averageSJC_SAMPLE_1 >= read_cov
+                )
+                and (
+                    event.averageIJC_SAMPLE_2 >= read_cov
+                    or event.averageSJC_SAMPLE_2 >= read_cov
+                )
                 and min(event.averagePsiSample1, event.averagePsiSample2) <= max_psi
                 and max(event.averagePsiSample1, event.averagePsiSample2) >= min_psi
             ):
@@ -55,13 +71,18 @@ def filter_rMATS(
                         upregulated_events.append(event)
                 elif (
                     event.FDR >= bg_fdr
-                    and max(event.IncLevel1) - min(event.IncLevel1) <= bg_within_group_delta_psi
-                    and max(event.IncLevel2) - min(event.IncLevel2) <= bg_within_group_delta_psi
+                    and max(event.IncLevel1) - min(event.IncLevel1)
+                    <= bg_within_group_delta_psi
+                    and max(event.IncLevel2) - min(event.IncLevel2)
+                    <= bg_within_group_delta_psi
                 ):
                     background_events.append(event)
             # handle cases where --b2 is not provided.
             elif (
-                (event.averageIJC_SAMPLE_1 >= read_cov or event.averageSJC_SAMPLE_1 >= read_cov)
+                (
+                    event.averageIJC_SAMPLE_1 >= read_cov
+                    or event.averageSJC_SAMPLE_1 >= read_cov
+                )
                 and math.isnan(event.averageIJC_SAMPLE_2)
                 and min(event.averagePsiSample1, event.averagePsiSample2) <= max_psi
                 and max(event.averagePsiSample1, event.averagePsiSample2) >= min_psi
@@ -79,17 +100,59 @@ def filter_rMATS(
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Filter rMATS output")
-    
-    parser.add_argument("--input", type=str, required=True, help="Path to the rMATS output file")
-    parser.add_argument("--outdir", type=str, default=".", help="Output directory (default: %(default)s)")
-    parser.add_argument("--read_cov", type=int, default=10, help="Minimum read coverage (default: %(default)s)")
-    parser.add_argument("--min_psi", type=float, default=0.05, help="Minimum average PSI (default: %(default)s)")
-    parser.add_argument("--max_psi", type=float, default=0.95, help="Maximum average PSI (default: %(default)s)")
-    parser.add_argument("--sig_fdr", type=float, default=0.05, help="Threshold for significant FDR (default: %(default)s)")
-    parser.add_argument("--bg_fdr", type=float, default=0.5, help="Threshold for background FDR (default: %(default)s)")
-    parser.add_argument("--sig_delta_psi", type=float, default=0.1, help="Threshold for significant delta PSI (default: %(default)s)")
-    parser.add_argument("--bg_within_group_delta_psi", type=float, default=0.2, help="Threshold for background within-group delta PSI (default: %(default)s)")
-    
+
+    parser.add_argument(
+        "--input", type=str, required=True, help="Path to the rMATS output file"
+    )
+    parser.add_argument(
+        "--outdir",
+        type=str,
+        default=".",
+        help="Output directory (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--read_cov",
+        type=int,
+        default=10,
+        help="Minimum read coverage (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--min_psi",
+        type=float,
+        default=0.05,
+        help="Minimum average PSI (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--max_psi",
+        type=float,
+        default=0.95,
+        help="Maximum average PSI (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--sig_fdr",
+        type=float,
+        default=0.05,
+        help="Threshold for significant FDR (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--bg_fdr",
+        type=float,
+        default=0.5,
+        help="Threshold for background FDR (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--sig_delta_psi",
+        type=float,
+        default=0.1,
+        help="Threshold for significant delta PSI (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--bg_within_group_delta_psi",
+        type=float,
+        default=0.2,
+        help="Threshold for background within-group delta PSI (default: %(default)s)",
+    )
+
     return parser.parse_args()
 
 
@@ -102,7 +165,7 @@ if __name__ == "__main__":
         "filtered": os.path.join(args.outdir, f"filtered_{input_fn}"),
         "upregulated": os.path.join(args.outdir, f"up_{input_fn}"),
         "downregulated": os.path.join(args.outdir, f"dn_{input_fn}"),
-        "background": os.path.join(args.outdir, f"bg_{input_fn}")
+        "background": os.path.join(args.outdir, f"bg_{input_fn}"),
     }
 
     header, event_dict = filter_rMATS(
@@ -113,7 +176,7 @@ if __name__ == "__main__":
         args.sig_fdr,
         args.bg_fdr,
         args.sig_delta_psi,
-        args.bg_within_group_delta_psi
+        args.bg_within_group_delta_psi,
     )
 
     for category in event_dict:
