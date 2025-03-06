@@ -1,153 +1,77 @@
-#!/usr/bin/env python3
-
 import argparse
 import math
 import os
 import sys
 from rmats_class_exon import exon_SE, exon_RI, exon_AXSS, exon_MXE
 
+with open(snakemake.log[0], "w") as f:
+    sys.stderr = sys.stdout = f
+
 # modified from https://github.com/Xinglab/rmats-turbo-tutorial/blob/main/scripts/rmats_filtering.py
 
+EXON_CLASS_MAP = {
+    "SE": exon_SE,
+    "RI": exon_RI,
+    "A3SS": exon_AXSS,
+    "A5SS": exon_AXSS,
+    "MXE": exon_MXE,
+}
 
-def get_exon_class(fn):
-    if "SE" in fn:
-        return exon_SE
-    elif "RI" in fn:
-        return exon_RI
-    elif "A3SS" in fn:
-        return exon_AXSS
-    elif "A5SS" in fn:
-        return exon_AXSS
-    elif "MXE" in fn:
-        return exon_MXE
-    else:
-        print(
-            "Invalid alternative event type in the input file name. Please modify the file name."
-        )
-        sys.exit()
-
-
-def filter_rMATS(
-    fn,
-    read_cov,
-    min_psi,
-    max_psi,
-    sig_fdr,
-    bg_fdr,
-    sig_delta_psi,
-    bg_within_group_delta_psi,
-):
-
-    exon = get_exon_class(fn)
-
-    filtered_events = []
-    upregulated_events = []
-    downnregulated_events = []
-    background_events = []
-
-    with open(fn, "r") as f:
-        header = f.readline()
-        for line in f:
-            event = exon(line)
-            # filter events by read coverage and PSI
-            if (
-                (
-                    event.averageIJC_SAMPLE_1 >= read_cov
-                    or event.averageSJC_SAMPLE_1 >= read_cov
-                )
-                and (
-                    event.averageIJC_SAMPLE_2 >= read_cov
-                    or event.averageSJC_SAMPLE_2 >= read_cov
-                )
-                and min(event.averagePsiSample1, event.averagePsiSample2) <= max_psi
-                and max(event.averagePsiSample1, event.averagePsiSample2) >= min_psi
-            ):
-                filtered_events.append(event)
-                # filter events by delta PSI and FDR
-                if event.FDR < sig_fdr:
-                    if event.IncLevelDifference >= sig_delta_psi:
-                        downnregulated_events.append(event)
-                    elif event.IncLevelDifference <= -sig_delta_psi:
-                        upregulated_events.append(event)
-                elif (
-                    event.FDR >= bg_fdr
-                    and max(event.IncLevel1) - min(event.IncLevel1)
-                    <= bg_within_group_delta_psi
-                    and max(event.IncLevel2) - min(event.IncLevel2)
-                    <= bg_within_group_delta_psi
-                ):
-                    background_events.append(event)
-            # handle cases where --b2 is not provided.
-            elif (
-                (
-                    event.averageIJC_SAMPLE_1 >= read_cov
-                    or event.averageSJC_SAMPLE_1 >= read_cov
-                )
-                and math.isnan(event.averageIJC_SAMPLE_2)
-                and min(event.averagePsiSample1, event.averagePsiSample2) <= max_psi
-                and max(event.averagePsiSample1, event.averagePsiSample2) >= min_psi
-            ):
-                filtered_events.append(event)
-
-    event_dict = {
-        "upregulated": upregulated_events,
-        "downregulated": downnregulated_events,
-        "filtered": filtered_events,
-    }
-
-    return header, event_dict
+SUFFIX = ".MATS.JC.txt"
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Filter rMATS output")
 
     parser.add_argument(
-        "--input", type=str, required=True, help="Path to the rMATS output file"
+        "--rmats-dir",
+        type=str,
+        required=True,
+        help="Path to the rMATS output directory",
     )
     parser.add_argument(
         "--outdir",
         type=str,
-        default=".",
-        help="Output directory (default: %(default)s)",
+        help="Output directory to write the filtered results (default: same as --rmats-dir)",
     )
     parser.add_argument(
-        "--read_cov",
+        "--read-cov",
         type=int,
         default=10,
         help="Minimum read coverage (default: %(default)s)",
     )
     parser.add_argument(
-        "--min_psi",
+        "--min-psi",
         type=float,
         default=0.05,
         help="Minimum average PSI (default: %(default)s)",
     )
     parser.add_argument(
-        "--max_psi",
+        "--max-psi",
         type=float,
         default=0.95,
         help="Maximum average PSI (default: %(default)s)",
     )
     parser.add_argument(
-        "--sig_fdr",
+        "--sig-fdr",
         type=float,
         default=0.05,
         help="Threshold for significant FDR (default: %(default)s)",
     )
     parser.add_argument(
-        "--bg_fdr",
-        type=float,
-        default=0.5,
-        help="Threshold for background FDR (default: %(default)s)",
-    )
-    parser.add_argument(
-        "--sig_delta_psi",
+        "--sig_delta-psi",
         type=float,
         default=0.1,
         help="Threshold for significant delta PSI (default: %(default)s)",
     )
     parser.add_argument(
-        "--bg_within_group_delta_psi",
+        "--bg-fdr",
+        type=float,
+        default=0.5,
+        help="Threshold for background FDR (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--bg-within-group-delta-psi",
         type=float,
         default=0.2,
         help="Threshold for background within-group delta PSI (default: %(default)s)",
@@ -156,32 +80,162 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
-    args = parse_args()
-    input_path = args.input
-    input_fn = os.path.basename(input_path)
+def get_exon_class(file_name):
+    event_type = os.path.basename(file_name)[: -len(SUFFIX)]
 
-    output_files = {
-        "filtered": os.path.join(args.outdir, f"filtered_{input_fn}"),
-        "upregulated": os.path.join(args.outdir, f"up_{input_fn}"),
-        "downregulated": os.path.join(args.outdir, f"dn_{input_fn}"),
-        "background": os.path.join(args.outdir, f"bg_{input_fn}"),
-    }
+    return EXON_CLASS_MAP.get(event_type)
 
-    header, event_dict = filter_rMATS(
-        args.input,
-        args.read_cov,
-        args.min_psi,
-        args.max_psi,
-        args.sig_fdr,
-        args.bg_fdr,
-        args.sig_delta_psi,
-        args.bg_within_group_delta_psi,
+
+def filter_read_coverage_psi(event, read_cov, min_psi, max_psi):
+    coverage_condition = (
+        event.averageIJC_SAMPLE_1 >= read_cov or event.averageSJC_SAMPLE_1 >= read_cov
+    ) and (
+        event.averageIJC_SAMPLE_2 >= read_cov or event.averageSJC_SAMPLE_2 >= read_cov
     )
 
-    for category in event_dict:
-        if event_dict[category]:
-            with open(output_files[category], "w") as f:
-                f.write(header)
-                for event in event_dict[category]:
-                    f.write(str(event))
+    psi_condition = (
+        min(event.averagePsiSample1, event.averagePsiSample2) <= max_psi
+        and max(event.averagePsiSample1, event.averagePsiSample2) >= min_psi
+    )
+
+    return coverage_condition and psi_condition
+
+
+def filter_upregulated_sig(event, sig_fdr, sig_delta_psi):
+    return event.FDR < sig_fdr and event.IncLevelDifference >= sig_delta_psi
+
+
+def filter_downregulated_sig(event, sig_fdr, sig_delta_psi):
+    return event.FDR < sig_fdr and event.IncLevelDifference <= -sig_delta_psi
+
+
+def filter_background(event, bg_fdr, bg_within_group_delta_psi):
+    return (
+        event.FDR >= bg_fdr
+        and max(event.IncLevel1) - min(event.IncLevel1) <= bg_within_group_delta_psi
+        and max(event.IncLevel2) - min(event.IncLevel2) <= bg_within_group_delta_psi
+    )
+
+
+def filter_without_b2(event, read_cov, min_psi, max_psi):
+    if (
+        math.isnan(event.averageIJC_SAMPLE_2)
+        and math.isnan(event.averageSJC_SAMPLE_2)
+        and math.isnan(event.averagePsiSample2)
+    ):
+
+        return (
+            event.averageIJC_SAMPLE_1 >= read_cov
+            or event.averageSJC_SAMPLE_1 >= read_cov
+        ) and min_psi <= event.averagePsiSample1 <= max_psi
+
+
+def filter_rMATs(
+    file_name,
+    read_cov,
+    min_psi,
+    max_psi,
+    sig_fdr,
+    sig_delta_psi,
+    bg_fdr,
+    bg_within_group_delta_psi,
+):
+    event_dict = {"filtered": [], "up": [], "dn": [], "bg": []}
+
+    exon = get_exon_class(file_name)
+
+    if exon is None:
+        print(f"Not filtering: {file_name}")
+        return
+
+    with open(file_name, "r") as in_handle:
+        header = in_handle.readline()
+
+        for line in in_handle:
+            event = exon(line)
+            
+            # Filter event based on read coverage and PSI values
+            if filter_read_coverage_psi(event, read_cov, min_psi, max_psi):
+                event_dict["filtered"].append(event)
+
+                if filter_downregulated_sig(event, sig_fdr, sig_delta_psi):
+                    event_dict["dn"].append(event)
+                elif filter_upregulated_sig(event, sig_fdr, sig_delta_psi):
+                    event_dict["up"].append(event)
+                elif filter_background(event, bg_fdr, bg_within_group_delta_psi):
+                    event_dict["bg"].append(event)
+
+            # Handle events where --b2 is not provided
+            elif filter_without_b2(event, read_cov, min_psi, max_psi):
+                event_dict["filtered"].append(event)
+
+    return event_dict
+
+
+def get_header(file_name):
+    with open(file_name, "r") as in_handle:
+        header = in_handle.readline()
+    return header
+
+
+def write_event(outdir, in_file_name, event_dict, header):
+    os.makedirs(outdir, exist_ok=True)
+
+    for category, events in event_dict.items():
+        out_file_name = os.path.join(outdir, f"{category}_{in_file_name}")
+
+        with open(out_file_name, "w") as out_handle:
+            out_handle.write(header)
+
+            for event in events:
+                out_handle.write(str(event))
+
+
+def write_summary(outdir, summary_dict):
+    summary_file = os.path.join(outdir, "summary_filtered.tsv")
+    summary_order = ["SE", "A3SS", "A5SS", "MXE", "RI"]
+    summary_dict = {k: summary_dict[k] for k in summary_order if k in summary_dict}
+
+    with open(summary_file, "w") as out_handle:
+        header = "\t".join(["event_type", "filtered", "total_sig", "up", "dn"]) + "\n"
+        out_handle.write(header)
+        for k, v in summary_dict.items():
+           out_handle.write(f"{k}\t" + "\t".join(map(str, v)) + "\n")
+
+
+def main():
+    args = parse_args()
+    args_dict = vars(args)
+
+    rmats_dir = args_dict.pop("rmats_dir")
+    outdir = args_dict.pop("outdir") or rmats_dir
+    summary_dict = {}
+
+    file_names = sorted(os.listdir(rmats_dir))
+    for name in file_names:
+        if not name.endswith(SUFFIX):
+            continue
+        
+        # filtering
+        file_path = os.path.join(rmats_dir, name)
+        event_dict = filter_rMATs(file_path, *args_dict.values())
+
+        if event_dict is None:
+            continue
+
+        header = get_header(file_path)
+        write_event(outdir, name, event_dict, header)
+
+        # summary
+        filtered = len(event_dict["filtered"])
+        up = len(event_dict["up"])
+        dn = len(event_dict["dn"])
+        total_sig = up + dn
+
+        event_type = name.split(".")[0]
+        summary_dict[event_type] = [filtered, total_sig, up, dn]
+        write_summary(outdir, summary_dict)
+
+
+if __name__ == "__main__":
+    main()
