@@ -1,5 +1,5 @@
-results/**
-resources/**
-logs*/**
-.snakemake
-.snakemake/**
+results*/
+resources/
+logs*/
+.snakemake/
+PAIRADISE/

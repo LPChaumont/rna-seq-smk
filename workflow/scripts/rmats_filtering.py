@@ -1,11 +1,7 @@
 import argparse
 import math
 import os
-import sys
 from rmats_class_exon import exon_SE, exon_RI, exon_AXSS, exon_MXE
-
-with open(snakemake.log[0], "w") as f:
-    sys.stderr = sys.stdout = f
 
 # modified from https://github.com/Xinglab/rmats-turbo-tutorial/blob/main/scripts/rmats_filtering.py
 
@@ -59,7 +55,7 @@ def parse_args():
         help="Threshold for significant FDR (default: %(default)s)",
     )
     parser.add_argument(
-        "--sig_delta-psi",
+        "--sig-delta-psi",
         type=float,
         default=0.1,
         help="Threshold for significant delta PSI (default: %(default)s)",

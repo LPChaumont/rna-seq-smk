@@ -49,6 +49,11 @@ set-resources:
         mem_gb: 36
         time: 0-2:00
 
+    star_align_old:
+        threads: 8
+        mem_gb: 36
+        time: 0-2:00
+
     coco_ca:
         mem_gb: 8
         time: 0-1:00
@@ -78,10 +83,15 @@ set-resources:
         mem_gb: 2
         time: 0-0:30
 
-    rmats_stat:
+    rmats_prep_stat:
         threads: 1
-        mem_gb: 2
-        time: 0-0:30
+        mem_gb: 1
+        time: 0-0:10
+
+    rmats_stat:
+        threads: 8
+        mem_gb: 8
+        time: 0-2:00
 
     rmats_filtering:
         threads: 1

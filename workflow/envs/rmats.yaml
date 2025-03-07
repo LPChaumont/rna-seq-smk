@@ -4,6 +4,8 @@ channels:
   - nodefaults
 dependencies:
   - rmats=4.3.0
-  - r-base=4.4.1
-  - git
-  - wget
+  - r-base=4.3
+  - r-doparallel=1.0
+  - r-foreach=1.5
+  - r-iterators=1.0
+  - r-nloptr=2.0

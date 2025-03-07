@@ -4,20 +4,19 @@ localrules:
 
 rule install_pairadise:
     output:
-        outdir=directory("resources/PAIRADISE"),
-        script="resources/install_r_deps.R",
+        outdir=directory("PAIRADISE"),
     params:
-        link_pairadise="https://github.com/Xinglab/PAIRADISE.git",
-        link_r_deps="https://raw.githubusercontent.com/Xinglab/rmats-turbo/master/install_r_deps.R",
+        link="https://github.com/Xinglab/PAIRADISE.git",
+        install_dir="./PAIRADISE/pairadise/src/pairadise_model/",
     log:
         "logs/rmats/install_pairadise.log",
     conda:
         "../envs/rmats.yaml"
     shell:
-        "cd resources/"
-        " && git clone {params.link_pairadise} 2> {log}"
-        " && wget {params.link_r_deps} 2>> {log}"
-        " && Rscript install_r_deps.R paired 2>> {log}"
+        """
+        git clone {params.link} 2> {log}
+        Rscript -e "install.packages('{params.install_dir}', repos=NULL)" 2>> {log}
+        """
 
 
 rule rmats_config_prep:
@@ -119,21 +118,19 @@ rule rmats_post:
         " &> {log}"
 
 
-rule rmats_stat:
+rule rmats_prep_stat:
     input:
         config_post="results/rmats/bam_config_post/all_samples.txt",
         post="results/rmats/post/summary.txt",
     output:
-        summary="results/rmats/stat/{contrast}/summary.txt",
+        flag=touch("results/rmats/stat/{contrast}/prep_stat.txt"),
     log:
-        "logs/rmats/stat/{contrast}.log",
+        "logs/rmats/stat/prep_{contrast}.log",
     params:
         stat_dir=lambda w, output: os.path.dirname(output[0]),
-        stat_tmp_dir="results/rmats/stat/{contrast}/tmp",
-        post_dir=lambda w, input: os.path.dirname(input.post),
-        group_1=lambda w: get_rmats_group_indices(w)[0],
-        group_2=lambda w: get_rmats_group_indices(w)[1],
-        paired_stats=use_rmats_pairadise(),
+        post_dir=lambda w, input: os.path.dirname(input[1]),
+        group_1=lambda w, input: get_rmats_group_indices(input[0], w)[0],
+        group_2=lambda w, input: get_rmats_group_indices(input[0], w)[1],
     conda:
         "../envs/rmats.yaml"
     shell:
@@ -143,10 +140,25 @@ rule rmats_stat:
         " --group-1-indices {params.group_1}"
         " --group-2-indices {params.group_2}"
         " &> {log}"
-        " && rmats.py"
+
+
+rule rmats_stat:
+    input:
+        flag="results/rmats/stat/{contrast}/prep_stat.txt",
+    output:
+        summary="results/rmats/stat/{contrast}/summary.txt",
+    log:
+        "logs/rmats/stat/{contrast}.log",
+    params:
+        stat_dir=lambda w, output: os.path.dirname(output[0]),
+        paired_stats=use_rmats_pairadise(),
+    conda:
+        "../envs/rmats.yaml"
+    shell:
+        "rmats.py"
         " --nthread {resources.threads}"
         " --od {params.stat_dir}"
-        " --tmp {params.stat_tmp_dir}"
+        " --tmp {params.stat_dir}/tmp"
         " --task stat"
         " {params.paired_stats}"
         " &>> {log}"
@@ -156,22 +168,17 @@ rule rmats_filtering:
     input:
         "results/rmats/stat/{contrast}/summary.txt",
     output:
-        filtered="results/rmats/stat/{contrast}/{filter}_{event}.MATS.{junction}.txt",
+        "results/rmats/stat/{contrast}/summary_filtered.tsv",
     params:
-        outdir=lambda w, output: os.path.dirname(output[0]),
-        rmats_input="results/rmats/stat/{contrast}/{event}.MATS.{junction}.txt",
+        rmats_dir=lambda w, input: os.path.dirname(input[0]),
     log:
-        "logs/rmats/filtering/{contrast}_{filter}_{event}_{junction}.log",
+        "logs/rmats/filtering/{contrast}.log",
     conda:
         "../envs/rmats.yaml"
     shell:
         "python workflow/scripts/rmats_filtering.py"
-        " --input {params.rmats_input}"
-        " --outdir {params.outdir}"
-        " --read_cov 10"
-        " --min_psi 0.05"
-        " --max_psi 0.95"
-        " --sig_fdr 0.05"
-        " --bg_fdr 0.5"
-        " --sig_delta_psi 0.1"
-        " --bg_within_group_delta_psi 0.5"
+        " --rmats-dir {params.rmats_dir}"
+        " --read-cov 10"
+        " --sig-fdr 0.05"
+        " --sig-delta-psi 0.1"
+        " &> {log}"
